@@ -19,19 +19,27 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       connectTimeout: process.env.DB_CONNECT_TIMEOUT
         ? Number(process.env.DB_CONNECT_TIMEOUT)
         : 10000,
-      debug: process.env.DB_DEBUG === 'true',
     });
-    super({ adapter });
+    super({
+      adapter,
+      log:
+        process.env.DB_DEBUG === 'true'
+          ? [
+              { emit: 'event', level: 'query' },
+              { emit: 'stdout', level: 'error' },
+              { emit: 'stdout', level: 'warn' },
+            ]
+          : [{ emit: 'stdout', level: 'error' }],
+    });
   }
 
   async onModuleInit() {
     try {
       await this.$connect();
       await this.$queryRaw`SELECT 1`;
-      this.logger.log('Prisma: Database connection test succeeded.');
-      /* this.logger.debug(`Prisma: connected successfully to the database.`); */
+      this.logger.log('Prisma: connected successfully to the database.');
     } catch (error) {
-      this.logger.error(`Prisma: Failed to connect to the database: ${error}`);
+      this.logger.error(`Prisma: connected failed to the database: ${error}`);
     }
   }
 

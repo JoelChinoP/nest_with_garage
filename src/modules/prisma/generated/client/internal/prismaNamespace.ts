@@ -384,7 +384,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
-
+  FileResource: 'FileResource'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -400,10 +400,77 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: never
+    modelProps: "fileResource"
     txIsolationLevel: TransactionIsolationLevel
   }
-  model: {}
+  model: {
+    FileResource: {
+      payload: Prisma.$FileResourcePayload<ExtArgs>
+      fields: Prisma.FileResourceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FileResourceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileResourcePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FileResourceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileResourcePayload>
+        }
+        findFirst: {
+          args: Prisma.FileResourceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileResourcePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FileResourceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileResourcePayload>
+        }
+        findMany: {
+          args: Prisma.FileResourceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileResourcePayload>[]
+        }
+        create: {
+          args: Prisma.FileResourceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileResourcePayload>
+        }
+        createMany: {
+          args: Prisma.FileResourceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.FileResourceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileResourcePayload>
+        }
+        update: {
+          args: Prisma.FileResourceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileResourcePayload>
+        }
+        deleteMany: {
+          args: Prisma.FileResourceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FileResourceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.FileResourceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileResourcePayload>
+        }
+        aggregate: {
+          args: Prisma.FileResourceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFileResource>
+        }
+        groupBy: {
+          args: Prisma.FileResourceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FileResourceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FileResourceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FileResourceCountAggregateOutputType> | number
+        }
+      }
+    }
+  }
 } & {
   other: {
     payload: any
@@ -442,7 +509,102 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const FileResourceScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  codFolder: 'codFolder',
+  originalName: 'originalName',
+  filePath: 'filePath',
+  url: 'url',
+  mimeType: 'mimeType',
+  extension: 'extension',
+  size: 'size',
+  uploadedBy: 'uploadedBy',
+  is_temp: 'is_temp',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
 
+export type FileResourceScalarFieldEnum = (typeof FileResourceScalarFieldEnum)[keyof typeof FileResourceScalarFieldEnum]
+
+
+export const RelationLoadStrategy = {
+  query: 'query',
+  join: 'join'
+} as const
+
+export type RelationLoadStrategy = (typeof RelationLoadStrategy)[keyof typeof RelationLoadStrategy]
+
+
+export const SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const FileResourceOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  codFolder: 'codFolder',
+  originalName: 'originalName',
+  filePath: 'filePath',
+  url: 'url',
+  mimeType: 'mimeType',
+  extension: 'extension'
+} as const
+
+export type FileResourceOrderByRelevanceFieldEnum = (typeof FileResourceOrderByRelevanceFieldEnum)[keyof typeof FileResourceOrderByRelevanceFieldEnum]
+
+
+
+/**
+ * Field references
+ */
+
+
+/**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'String'
+ */
+export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime'
+ */
+export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
 
 /**
  * Batch Payload for updateMany & deleteMany & createMany
@@ -538,7 +700,9 @@ export type PrismaClientOptions = ({
    */
   comments?: runtime.SqlCommenterPlugin[]
 }
-export type GlobalOmitConfig = {}
+export type GlobalOmitConfig = {
+  fileResource?: Prisma.FileResourceOmit
+}
 
 /* Types for Logging */
 export type LogLevel = 'info' | 'query' | 'warn' | 'error'

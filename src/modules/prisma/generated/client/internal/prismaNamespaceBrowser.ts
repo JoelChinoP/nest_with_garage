@@ -51,7 +51,7 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-
+  FileResource: 'FileResource'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -68,4 +68,61 @@ export const TransactionIsolationLevel = {
 } as const
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const FileResourceScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  codFolder: 'codFolder',
+  originalName: 'originalName',
+  filePath: 'filePath',
+  url: 'url',
+  mimeType: 'mimeType',
+  extension: 'extension',
+  size: 'size',
+  uploadedBy: 'uploadedBy',
+  is_temp: 'is_temp',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type FileResourceScalarFieldEnum = (typeof FileResourceScalarFieldEnum)[keyof typeof FileResourceScalarFieldEnum]
+
+
+export const RelationLoadStrategy = {
+  query: 'query',
+  join: 'join'
+} as const
+
+export type RelationLoadStrategy = (typeof RelationLoadStrategy)[keyof typeof RelationLoadStrategy]
+
+
+export const SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const FileResourceOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  codFolder: 'codFolder',
+  originalName: 'originalName',
+  filePath: 'filePath',
+  url: 'url',
+  mimeType: 'mimeType',
+  extension: 'extension'
+} as const
+
+export type FileResourceOrderByRelevanceFieldEnum = (typeof FileResourceOrderByRelevanceFieldEnum)[keyof typeof FileResourceOrderByRelevanceFieldEnum]
 

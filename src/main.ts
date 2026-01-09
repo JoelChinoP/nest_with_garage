@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { ValidationPipe } from '@nestjs/common';
-import { AppLogger } from '@config/logger';
+import { AppLogger } from '@config/logger.config';
 
 async function bootstrap() {
   const nodeEnv = process.env.NODE_ENV || 'development';
