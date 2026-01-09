@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// Define generators to specify which tools to generate from your schema.
+generator client {
+  provider        = "prisma-client"
+  output          = "./generated/client"
+  previewFeatures = ["relationJoins"]
+  /**
+   * moduleFormat    = "esm" // or `"cjs"` for CommonJS
+   */
+  engineType      = "client" // no Rust engine
+}
+
+// Generate a markdown ERD (Entity Relationship Diagram) from your schema.
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "./generated/docs/entity-relationship-diagram.md"
+  title    = "Cross - Entity Relationship Diagram"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+/**
+ * Learn more about defining models in the docs: https://pris.ly/d/data-modeling
+ * Files related to this schema:
+ * - Prisma Models: src/infrastructure/prisma/models
+ * - Prisma Client: src/infrastructure/prisma/generated/prisma
+ * - Prisma Migrations: src/infrastructure/prisma/migrations
+ * Command to generate the Prisma Client:
+ * npx prisma generate
+ * Command to create a new migration:
+ * npx prisma migrate dev --name <migration_name>
+ * Command to push the database schema without generating a migration:
+ * npx prisma db push
+ */

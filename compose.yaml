@@ -1,0 +1,60 @@
+services:
+  master: 
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs-master
+    ports:
+      - "9333:9333"  # Solo este puerto es necesario
+    command: "master -ip=master -port=9333 -mdir=/data -defaultReplication=001"
+    volumes:
+      - ./data/master:/data
+    restart: unless-stopped
+    networks:
+      - seaweedfs
+    deploy:
+      resources: 
+        limits:
+          cpus:  '0.5'
+          memory: 256M
+
+  volume:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs-volume
+    ports:
+      - "8080:8080"  # Solo este puerto es necesario
+    command: 'volume -mserver="master: 9333" -ip=volume -port=8080 -dir=/data -max=100'
+    volumes:
+      - ./data/volume:/data
+    depends_on:
+      - master
+    restart: unless-stopped
+    networks:
+      - seaweedfs
+    deploy:
+      resources:
+        limits:
+          cpus: '1. 0'
+          memory: 512M
+
+  filer:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs-filer
+    ports:
+      - "8888:8888"  # Solo este puerto es necesario
+    command: 'filer -master="master:9333" -ip=filer -port=8888'
+    volumes: 
+      - ./data/filer:/data
+    depends_on: 
+      - master
+      - volume
+    restart: unless-stopped
+    networks:
+      - seaweedfs
+    deploy: 
+      resources:
+        limits: 
+          cpus: '0.5'
+          memory: 512M
+
+networks:
+  seaweedfs:
+    driver: bridge

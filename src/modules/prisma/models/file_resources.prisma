@@ -1,0 +1,19 @@
+model FileResource {
+  id           Int       @id @default(autoincrement())
+  uuid         String    @unique @default(uuid(7)) @db.VarChar(36)
+  codFolder    String?   @map("cod_folder") @db.VarChar(255)
+  originalName String    @map("original_name") @db.VarChar(500)
+  filePath     String    @map("file_path") @db.VarChar(500)
+  url          String    @db.VarChar(500)
+  mimeType     String?   @map("mime_type") @db.VarChar(100)
+  extension    String?   @db.VarChar(10)
+  size         Int?
+  uploadedBy   Int?      @map("uploaded_by")
+  is_temp      Boolean   @default(false) @map("is_temp")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  @@index([uuid])
+  @@map("file_resources")
+}
