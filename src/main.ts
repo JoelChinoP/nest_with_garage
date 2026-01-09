@@ -5,7 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppLogger } from '@config/logger';
 
 async function bootstrap() {
-  const nodeEnv = process.env.NODE_ENV || 'production';
+  const nodeEnv = process.env.NODE_ENV || 'development';
 
   // Uso de Fastify como servidor HTTP
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), {
@@ -49,12 +49,12 @@ async function bootstrap() {
 
   app.useLogger(appLogger);
 
-  //Configuración de prefijo global
+  //Configuración de prefijo global para las rutas
   app.setGlobalPrefix('/api/v1');
 
   // Inicio del servidor en el puerto especificado o 3000 por defecto
-  await app.listen(process.env.PORT ?? 3000, '0.0.0.0', () => {
-    console.log(`🚀 Application is running in ${nodeEnv} mode on: ${process.env.PORT ?? 3000}`);
+  await app.listen(process.env.APP_PORT ?? 3000, '0.0.0.0', () => {
+    console.log(`🚀 Application is running in ${nodeEnv} mode on: ${process.env.APP_PORT ?? 3000}`);
   });
 }
 
