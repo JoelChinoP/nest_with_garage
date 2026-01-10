@@ -21,6 +21,7 @@ services:
     environment:
       API_BASE_URL: "http://garage:3903"
       S3_ENDPOINT_URL: "http://garage:3900"
+      AUTH_USER_PASS: "admin:$$2y$$10$$EFSJVCbj9SettqwmQ2LhxeUfYPZDFLYQQsgjhOjgWsE9osAEzSIPe"
     ports:
       - 3909:3909
     depends_on: [garage]
