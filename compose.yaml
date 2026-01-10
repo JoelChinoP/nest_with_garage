@@ -1,60 +1,31 @@
 services:
-  master: 
-    image: chrislusf/seaweedfs:latest
-    container_name: seaweedfs-master
-    ports:
-      - "9333:9333"  # Solo este puerto es necesario
-    command: "master -ip=master -port=9333 -mdir=/data -defaultReplication=001"
+  garage:
+      image: dxflrs/garage:v2.1.0
+      container_name: garage
+      volumes:
+        - ./garage.dev.toml:/etc/garage.toml:ro
+        - ./garage/garage_meta:/var/garage/meta
+        - ./garage/garage_data:/var/garage/data
+        - ./garage/snapshots:/var/garage/snapshots
+      ports:
+        - 3900:3900
+        - 3901:3901
+        - 3902:3902
+        - 3903:3903
+      networks: [cross-network]
+  garage-ui:
+    image: khairul169/garage-webui:latest
+    container_name: garage-ui
     volumes:
-      - ./data/master:/data
-    restart: unless-stopped
-    networks:
-      - seaweedfs
-    deploy:
-      resources: 
-        limits:
-          cpus:  '0.5'
-          memory: 256M
-
-  volume:
-    image: chrislusf/seaweedfs:latest
-    container_name: seaweedfs-volume
+      - ./garage.dev.toml:/etc/garage.toml:ro
+    environment:
+      API_BASE_URL: "http://garage:3903"
+      S3_ENDPOINT_URL: "http://garage:3900"
     ports:
-      - "8080:8080"  # Solo este puerto es necesario
-    command: 'volume -mserver="master: 9333" -ip=volume -port=8080 -dir=/data -max=100'
-    volumes:
-      - ./data/volume:/data
-    depends_on:
-      - master
-    restart: unless-stopped
-    networks:
-      - seaweedfs
-    deploy:
-      resources:
-        limits:
-          cpus: '1. 0'
-          memory: 512M
-
-  filer:
-    image: chrislusf/seaweedfs:latest
-    container_name: seaweedfs-filer
-    ports:
-      - "8888:8888"  # Solo este puerto es necesario
-    command: 'filer -master="master:9333" -ip=filer -port=8888'
-    volumes: 
-      - ./data/filer:/data
-    depends_on: 
-      - master
-      - volume
-    restart: unless-stopped
-    networks:
-      - seaweedfs
-    deploy: 
-      resources:
-        limits: 
-          cpus: '0.5'
-          memory: 512M
+      - 3909:3909
+    depends_on: [garage]
+    networks: [cross-network]
 
 networks:
-  seaweedfs:
+  cross-network:
     driver: bridge
