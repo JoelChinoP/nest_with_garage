@@ -18,7 +18,7 @@ export class FileController {
   @HttpCode(HttpStatus.OK)
   @SuccesMessage('Archivo subido correctamente')
   getFolder() {
-    return 'Ok';
+    throw new Error('Method not implemented.');
   }
 
   @Public()

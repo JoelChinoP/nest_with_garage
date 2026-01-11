@@ -23,7 +23,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, T | Response<
           'Operación exitosa';
 
         return {
-          timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
+          timestamp: new Date().toISOString(), //Date().toISOString().slice(0, 19).replace('T', ' ')
           code: res.statusCode,
           messageType: res.statusCode < 400 ? 1 : 2,
           message,
