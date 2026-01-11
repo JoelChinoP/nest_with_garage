@@ -16,13 +16,13 @@ const database = {
   connection: env<Env>('DB_CONNECTION') ?? 'mysql',
   port: env<Env>('DB_PORT') ?? '3306',
   host: env<Env>('DB_HOST') ?? 'localhost',
-  user: env<Env>('DB_USER') ?? 'user',
-  password: env<Env>('DB_PASSWORD') ?? 'password',
+  user: env<Env>('DB_USER') ?? 'root',
+  password: env<Env>('DB_PASSWORD') ?? 'rott',
   name: env<Env>('DB_NAME') ?? 'mydb',
 };
 
 export default defineConfig({
-  schema: path.join('../modules/prisma/schema.prisma'),
+  schema: path.join('../modules/prisma/'), //../modules/prisma/schema.prisma
   datasource: {
     url:
       env<Env>('DATABASE_URL') ??
