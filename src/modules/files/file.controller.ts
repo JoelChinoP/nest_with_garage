@@ -1,19 +1,24 @@
 import { MultipartInterceptor } from '@/common/interceptors/multipart.interceptor';
-import { Files, Public } from '@common/decorators';
-import { Body, Controller, Delete, Get, Post, Query, UseInterceptors } from '@nestjs/common';
-import { timestamp } from 'rxjs';
+import { Files, Public, RawResponse, SuccesMessage } from '@common/decorators';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 
 @Controller('/')
 export class FileController {
-  @Public()
   @Get('folder')
+  @HttpCode(HttpStatus.OK)
+  @SuccesMessage('Archivo subido correctamente')
   getFolder() {
-    return {
-      timestamp: timestamp(),
-      data: 'Ok',
-      messageType: 1,
-      message: 'Archivo subido correctamente',
-    };
+    return 'Ok';
   }
 
   @Public()
@@ -30,6 +35,7 @@ export class FileController {
   }
 
   @Get('files-srv:uuid/download')
+  @RawResponse()
   downloadFileServ() {
     throw new Error('Method not implemented.');
   }

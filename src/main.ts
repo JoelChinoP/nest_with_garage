@@ -1,9 +1,10 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { ValidationPipe } from '@nestjs/common';
 import { AppLogger } from '@config/logger.config';
 import multipart from '@fastify/multipart';
+import { TransformInterceptor } from './common/interceptors';
 
 async function bootstrap() {
   const nodeEnv = process.env.NODE_ENV || 'development';
@@ -55,6 +56,10 @@ async function bootstrap() {
 
   //Configuración de prefijo global para las rutas
   app.setGlobalPrefix('/api/v1');
+
+  // Configuración de interceptor global para transformar respuestas
+  const reflector = app.get(Reflector);
+  app.useGlobalInterceptors(new TransformInterceptor(reflector));
 
   // Configuración de manejo de multipart/form-data
   await app.register(multipart, {
