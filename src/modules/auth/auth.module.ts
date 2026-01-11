@@ -4,8 +4,10 @@ import { AuthGuard } from '@common/guards';
 
 @Module({
   imports: [
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: process.env.JWT_SECRET,
+      }),
     }),
   ],
   providers: [AuthGuard],

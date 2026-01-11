@@ -4,6 +4,7 @@ import { AuthModule } from '@modules/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from '@common/guards';
 import { PrismaModule } from '@modules/prisma/prisma.module';
+import { FileModule } from '@modules/files/file.module';
 
 @Module({
   imports: [
@@ -11,8 +12,9 @@ import { PrismaModule } from '@modules/prisma/prisma.module';
       isGlobal: true, // Variables globales
       envFilePath: '.env', // Ruta al archivo .env
     }),
-    AuthModule,
     PrismaModule,
+    AuthModule,
+    FileModule,
   ],
   providers: [
     {

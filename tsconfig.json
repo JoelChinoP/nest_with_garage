@@ -12,10 +12,10 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
+      "@/*": ["./src/*"],
       "@modules/*": ["./src/modules/*"],
       "@common/*": ["./src/common/*"],
       "@config/*": ["./src/config/*"],
-      "@shared/*": ["./src/shared/*"],
       "@prisma-client/*": ["./src/modules/prisma/generated/client/*"]
     },
 
