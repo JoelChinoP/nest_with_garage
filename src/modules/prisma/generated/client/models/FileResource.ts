@@ -49,7 +49,7 @@ export type FileResourceMinAggregateOutputType = {
   extension: string | null
   size: number | null
   uploadedBy: number | null
-  is_temp: boolean | null
+  isTemp: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -66,7 +66,7 @@ export type FileResourceMaxAggregateOutputType = {
   extension: string | null
   size: number | null
   uploadedBy: number | null
-  is_temp: boolean | null
+  isTemp: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -83,7 +83,7 @@ export type FileResourceCountAggregateOutputType = {
   extension: number
   size: number
   uploadedBy: number
-  is_temp: number
+  isTemp: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -114,7 +114,7 @@ export type FileResourceMinAggregateInputType = {
   extension?: true
   size?: true
   uploadedBy?: true
-  is_temp?: true
+  isTemp?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -131,7 +131,7 @@ export type FileResourceMaxAggregateInputType = {
   extension?: true
   size?: true
   uploadedBy?: true
-  is_temp?: true
+  isTemp?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -148,7 +148,7 @@ export type FileResourceCountAggregateInputType = {
   extension?: true
   size?: true
   uploadedBy?: true
-  is_temp?: true
+  isTemp?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -252,7 +252,7 @@ export type FileResourceGroupByOutputType = {
   extension: string | null
   size: number | null
   uploadedBy: number | null
-  is_temp: boolean
+  isTemp: boolean
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -292,7 +292,7 @@ export type FileResourceWhereInput = {
   extension?: Prisma.StringNullableFilter<"FileResource"> | string | null
   size?: Prisma.IntNullableFilter<"FileResource"> | number | null
   uploadedBy?: Prisma.IntNullableFilter<"FileResource"> | number | null
-  is_temp?: Prisma.BoolFilter<"FileResource"> | boolean
+  isTemp?: Prisma.BoolFilter<"FileResource"> | boolean
   createdAt?: Prisma.DateTimeFilter<"FileResource"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FileResource"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"FileResource"> | Date | string | null
@@ -309,7 +309,7 @@ export type FileResourceOrderByWithRelationInput = {
   extension?: Prisma.SortOrderInput | Prisma.SortOrder
   size?: Prisma.SortOrderInput | Prisma.SortOrder
   uploadedBy?: Prisma.SortOrderInput | Prisma.SortOrder
-  is_temp?: Prisma.SortOrder
+  isTemp?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -330,7 +330,7 @@ export type FileResourceWhereUniqueInput = Prisma.AtLeast<{
   extension?: Prisma.StringNullableFilter<"FileResource"> | string | null
   size?: Prisma.IntNullableFilter<"FileResource"> | number | null
   uploadedBy?: Prisma.IntNullableFilter<"FileResource"> | number | null
-  is_temp?: Prisma.BoolFilter<"FileResource"> | boolean
+  isTemp?: Prisma.BoolFilter<"FileResource"> | boolean
   createdAt?: Prisma.DateTimeFilter<"FileResource"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FileResource"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"FileResource"> | Date | string | null
@@ -347,7 +347,7 @@ export type FileResourceOrderByWithAggregationInput = {
   extension?: Prisma.SortOrderInput | Prisma.SortOrder
   size?: Prisma.SortOrderInput | Prisma.SortOrder
   uploadedBy?: Prisma.SortOrderInput | Prisma.SortOrder
-  is_temp?: Prisma.SortOrder
+  isTemp?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -372,7 +372,7 @@ export type FileResourceScalarWhereWithAggregatesInput = {
   extension?: Prisma.StringNullableWithAggregatesFilter<"FileResource"> | string | null
   size?: Prisma.IntNullableWithAggregatesFilter<"FileResource"> | number | null
   uploadedBy?: Prisma.IntNullableWithAggregatesFilter<"FileResource"> | number | null
-  is_temp?: Prisma.BoolWithAggregatesFilter<"FileResource"> | boolean
+  isTemp?: Prisma.BoolWithAggregatesFilter<"FileResource"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FileResource"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"FileResource"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"FileResource"> | Date | string | null
@@ -388,7 +388,7 @@ export type FileResourceCreateInput = {
   extension?: string | null
   size?: number | null
   uploadedBy?: number | null
-  is_temp?: boolean
+  isTemp?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -405,7 +405,7 @@ export type FileResourceUncheckedCreateInput = {
   extension?: string | null
   size?: number | null
   uploadedBy?: number | null
-  is_temp?: boolean
+  isTemp?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -421,7 +421,7 @@ export type FileResourceUpdateInput = {
   extension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   size?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   uploadedBy?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  is_temp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isTemp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -438,7 +438,7 @@ export type FileResourceUncheckedUpdateInput = {
   extension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   size?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   uploadedBy?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  is_temp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isTemp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -455,7 +455,7 @@ export type FileResourceCreateManyInput = {
   extension?: string | null
   size?: number | null
   uploadedBy?: number | null
-  is_temp?: boolean
+  isTemp?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -471,7 +471,7 @@ export type FileResourceUpdateManyMutationInput = {
   extension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   size?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   uploadedBy?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  is_temp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isTemp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -488,7 +488,7 @@ export type FileResourceUncheckedUpdateManyInput = {
   extension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   size?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   uploadedBy?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  is_temp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isTemp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -511,7 +511,7 @@ export type FileResourceCountOrderByAggregateInput = {
   extension?: Prisma.SortOrder
   size?: Prisma.SortOrder
   uploadedBy?: Prisma.SortOrder
-  is_temp?: Prisma.SortOrder
+  isTemp?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -534,7 +534,7 @@ export type FileResourceMaxOrderByAggregateInput = {
   extension?: Prisma.SortOrder
   size?: Prisma.SortOrder
   uploadedBy?: Prisma.SortOrder
-  is_temp?: Prisma.SortOrder
+  isTemp?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -551,7 +551,7 @@ export type FileResourceMinOrderByAggregateInput = {
   extension?: Prisma.SortOrder
   size?: Prisma.SortOrder
   uploadedBy?: Prisma.SortOrder
-  is_temp?: Prisma.SortOrder
+  isTemp?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -612,7 +612,7 @@ export type FileResourceSelect<ExtArgs extends runtime.Types.Extensions.Internal
   extension?: boolean
   size?: boolean
   uploadedBy?: boolean
-  is_temp?: boolean
+  isTemp?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -631,13 +631,13 @@ export type FileResourceSelectScalar = {
   extension?: boolean
   size?: boolean
   uploadedBy?: boolean
-  is_temp?: boolean
+  isTemp?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type FileResourceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "uuid" | "codFolder" | "originalName" | "filePath" | "url" | "mimeType" | "extension" | "size" | "uploadedBy" | "is_temp" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["fileResource"]>
+export type FileResourceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "uuid" | "codFolder" | "originalName" | "filePath" | "url" | "mimeType" | "extension" | "size" | "uploadedBy" | "isTemp" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["fileResource"]>
 
 export type $FileResourcePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "FileResource"
@@ -653,7 +653,7 @@ export type $FileResourcePayload<ExtArgs extends runtime.Types.Extensions.Intern
     extension: string | null
     size: number | null
     uploadedBy: number | null
-    is_temp: boolean
+    isTemp: boolean
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -1036,7 +1036,7 @@ export interface FileResourceFieldRefs {
   readonly extension: Prisma.FieldRef<"FileResource", 'String'>
   readonly size: Prisma.FieldRef<"FileResource", 'Int'>
   readonly uploadedBy: Prisma.FieldRef<"FileResource", 'Int'>
-  readonly is_temp: Prisma.FieldRef<"FileResource", 'Boolean'>
+  readonly isTemp: Prisma.FieldRef<"FileResource", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"FileResource", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"FileResource", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"FileResource", 'DateTime'>

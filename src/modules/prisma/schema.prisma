@@ -6,7 +6,7 @@
 
 // Define generators to specify which tools to generate from your schema.
 generator client {
-  provider        = "prisma-client"
+  provider        = "prisma-client" // prisma-client-js
   output          = "./generated/client"
   previewFeatures = ["relationJoins"]
   /**

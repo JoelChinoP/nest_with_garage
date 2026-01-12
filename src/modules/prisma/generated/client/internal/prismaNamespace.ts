@@ -520,7 +520,7 @@ export const FileResourceScalarFieldEnum = {
   extension: 'extension',
   size: 'size',
   uploadedBy: 'uploadedBy',
-  is_temp: 'is_temp',
+  isTemp: 'isTemp',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
