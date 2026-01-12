@@ -1,7 +1,6 @@
 import { MultipartInterceptor } from '@/common/interceptors/multipart.interceptor';
 import { Files, Public, RawResponse, SuccesMessage } from '@common/decorators';
 import {
-  Body,
   Controller,
   Delete,
   Get,
@@ -11,6 +10,7 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common';
+import { UploadQueryDto } from './dto/UploadQueryDto';
 
 @Controller('/')
 export class FileController {
@@ -25,13 +25,13 @@ export class FileController {
   @UseInterceptors(MultipartInterceptor())
   @Post('files/upload/')
   uploadFile(
-    @Query() query: unknown,
+    @Query() query: UploadQueryDto,
     @Files() files: Record<string, Storage.MultipartFile[]>,
-    @Body() body: unknown,
   ) {
+    console.log('******************');
     console.log(query);
+    console.log('******************');
     console.log(files);
-    console.log(body);
   }
 
   @Get('files-srv:uuid/download')
