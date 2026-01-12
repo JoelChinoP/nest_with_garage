@@ -97,4 +97,13 @@ export class FileBufferService {
       where: { id },
     });
   }
+
+  async confirm(id: number) {
+    const file = await this.prisma.fileResource.update({
+      where: { id },
+      data: { isTemp: false },
+    });
+    if (!file) throw new Error('Archivo no encontrado');
+    return file;
+  }
 }
