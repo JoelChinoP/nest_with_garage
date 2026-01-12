@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import { PrismaClient } from './generated/client/client';
+import { filterSoftDeleted, softDelete } from './prisma.extensions';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
@@ -31,11 +32,15 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
             ]
           : [{ emit: 'stdout', level: 'error' }],
     });
+
+    const extended = this.$extends(softDelete).$extends(filterSoftDeleted);
+    return extended as any;
   }
 
   async onModuleInit() {
     try {
       await this.$connect();
+
       await this.$queryRaw`SELECT 1`;
       this.logger.log('Prisma: connected successfully to the database.');
     } catch (error) {

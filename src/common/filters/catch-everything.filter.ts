@@ -19,7 +19,7 @@ export class CatchEverythingFilter implements ExceptionFilter {
 
     // Si es una instancia de Error, mostrar el stack trace
     if (exception instanceof Error) {
-      console.error('filter: CatchEverythingFilter\n', exception);
+      console.error('filter: CatchEverythingFilter', exception.stack ?? exception);
     }
 
     const { httpStatus, message } =

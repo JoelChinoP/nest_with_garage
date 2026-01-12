@@ -1,5 +1,5 @@
 import { MultipartInterceptor } from '@/common/interceptors/multipart.interceptor';
-import { Files, Public, RawResponse, SuccesMessage } from '@common/decorators';
+import { Files, RawResponse, SuccesMessage } from '@common/decorators';
 import {
   Controller,
   Delete,
@@ -71,6 +71,7 @@ export class FileController {
   }
 
   @Get('files/:id')
+  @HttpCode(HttpStatus.OK)
   @SuccesMessage('Archivo encontrado correctamente')
   async getFileById(@Param('id', ParseIntPipe) id: number) {
     const exists = await this.bufferServ.exists(id);
@@ -79,7 +80,9 @@ export class FileController {
   }
 
   @Delete('files/:id')
-  deleteFileById() {
-    throw new Error('Method not implemented.');
+  @HttpCode(HttpStatus.OK)
+  @SuccesMessage('Archivo eliminado correctamente')
+  async deleteFileById(@Param('id', ParseIntPipe) id: number) {
+    await this.bufferServ.delete(id);
   }
 }

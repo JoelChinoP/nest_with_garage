@@ -85,4 +85,16 @@ export class FileBufferService {
       size: buffer.length,
     };
   }
+
+  async delete(id: number): Promise<void> {
+    const file = await this.prisma.fileResource.findUnique({
+      where: { id },
+    });
+
+    if (!file) throw new Error('Archivo no encontrado');
+
+    await this.prisma.fileResource.delete({
+      where: { id },
+    });
+  }
 }
