@@ -7,6 +7,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Readable } from 'stream';
 
 @Injectable()
 export class S3Service implements OnModuleInit, OnModuleDestroy {
@@ -54,7 +55,7 @@ export class S3Service implements OnModuleInit, OnModuleDestroy {
     return { bucket: this.bucket, key: arg.key };
   }
 
-  /* ===================== DOWNLOAD ===================== */
+  /* ===================== DOWNLOAD URL ===================== */
   async getDownloadUrl(arg: { key: string; expires?: number }) {
     return getSignedUrl(
       this.s3,
@@ -64,6 +65,26 @@ export class S3Service implements OnModuleInit, OnModuleDestroy {
       }),
       { expiresIn: arg.expires },
     );
+  }
+
+  async downloadFile(arg: { key: string }): Promise<Buffer> {
+    const res = await this.s3.send(
+      new GetObjectCommand({
+        Bucket: this.bucket,
+        Key: arg.key,
+      }),
+    );
+
+    /* const byteArray = await r.Body!.transformToByteArray();
+    return Buffer.from(byteArray); */
+
+    const stream = res.Body as Readable;
+    const chunks: Buffer[] = [];
+
+    for await (const chunk of stream) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    }
+    return Buffer.concat(chunks);
   }
 
   /* ===================== METADATA ===================== */
@@ -92,5 +113,24 @@ export class S3Service implements OnModuleInit, OnModuleDestroy {
         Key: arg.key,
       }),
     );
+  }
+
+  /* ===================== EXISTS ===================== */
+  async exists(key: string): Promise<boolean> {
+    try {
+      await this.s3.send(new HeadObjectCommand({ Bucket: this.bucket, Key: key }));
+
+      return true;
+    } catch (err: any) {
+      if (
+        err?.$metadata?.httpStatusCode === 404 ||
+        err?.name === 'NotFound' ||
+        err?.name === 'NoSuchKey'
+      ) {
+        return false;
+      }
+
+      throw err;
+    }
   }
 }
