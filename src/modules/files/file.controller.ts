@@ -14,6 +14,7 @@ import {
   Query,
   UseInterceptors,
   Res,
+  Put,
 } from '@nestjs/common';
 import { UploadQueryDto } from './dto/upload-query.dto';
 import { FileBufferService } from './services/file-buffer.service';
@@ -79,10 +80,34 @@ export class FileController {
     return exists;
   }
 
-  @Delete('files/:id')
+  @Delete('files/:id/remove')
   @HttpCode(HttpStatus.OK)
-  @SuccesMessage('Archivo eliminado correctamente')
+  @RawResponse()
   async deleteFileById(@Param('id', ParseIntPipe) id: number) {
     await this.bufferServ.delete(id);
+    return {
+      codigo: 200,
+      mensaje: 'Archivo eliminado correctamente',
+      data: null,
+    };
+  }
+
+  @Delete('files/:id')
+  @HttpCode(HttpStatus.OK)
+  @RawResponse()
+  fakeDeleteFileById(@Param('id', ParseIntPipe) id: number) {
+    /* await this.bufferServ.delete(id); */
+    return {
+      codigo: 200,
+      mensaje: 'Archivo eliminado correctamente',
+      data: { id: id },
+    };
+  }
+
+  @Put('files/:id/confirm')
+  @HttpCode(HttpStatus.OK)
+  @SuccesMessage('Archivo confirmado correctamente')
+  async confirmFileById(@Param('id', ParseIntPipe) id: number) {
+    return await this.bufferServ.confirm(id);
   }
 }
