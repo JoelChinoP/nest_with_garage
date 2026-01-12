@@ -11,7 +11,7 @@ import {
 import { MultipartOptions } from '@/types';
 import { MultipartFile, MultipartValue } from '@fastify/multipart';
 import { FastifyRequest } from 'fastify';
-import { getFileFromPart, validateFile } from '@common/utils/file.util';
+import { getFileFromPart, validateFile } from '@common/utils';
 
 type StoredFile = Awaited<ReturnType<typeof getFileFromPart>>;
 type MultipartPart = MultipartFile | MultipartValue;
