@@ -11,9 +11,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UploadQueryDto } from './dto/UploadQueryDto';
+import { FileBufferService } from './services/file-buffer.service';
 
 @Controller('/')
 export class FileController {
+  constructor(private readonly bufferServ: FileBufferService) {}
+
   @Get('folder')
   @HttpCode(HttpStatus.OK)
   @SuccesMessage('Archivo subido correctamente')
@@ -24,14 +27,19 @@ export class FileController {
   @Public()
   @UseInterceptors(MultipartInterceptor())
   @Post('files/upload/')
-  uploadFile(
+  async uploadFile(
     @Query() query: UploadQueryDto,
-    @Files() files: Record<string, Storage.MultipartFile[]>,
+    @Files() data: Record<string, Storage.MultipartFile[]>,
   ) {
     console.log('******************');
     console.log(query);
     console.log('******************');
-    console.log(files);
+    console.log(data);
+    console.log('******************');
+
+    const file: Storage.MultipartFile = data['documento'][0];
+    if (!file) throw new Error('No hay ningún archivo para subir');
+    await this.bufferServ.upload(query, file);
   }
 
   @Get('files-srv:uuid/download')

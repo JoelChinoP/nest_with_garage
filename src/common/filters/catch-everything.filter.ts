@@ -14,6 +14,14 @@ export class CatchEverythingFilter implements ExceptionFilter {
 
     const ctx = host.switchToHttp();
 
+    // Imprimir el error completo en la consola
+    /* console.error('Error capturado por CatchEverythingFilter:', exception); */
+
+    // Si es una instancia de Error, mostrar el stack trace
+    if (exception instanceof Error) {
+      console.error('filter: CatchEverythingFilter\n', exception);
+    }
+
     const { httpStatus, message } =
       exception instanceof HttpException
         ? { httpStatus: exception.getStatus(), message: exception.message }
