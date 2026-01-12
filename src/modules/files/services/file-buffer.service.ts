@@ -14,24 +14,29 @@ export class FileBufferService {
     const folder = query.codFolder ?? 'all-files';
 
     // Add your Prisma operations inside the array below
-    const fileRecord = await this.prisma.fileResource.create({
-      data: {
-        codFolder: folder,
-        originalName: query.nombreArchivo,
-        filePath: folder,
-        url: 'google.com',
-        isTemp: false,
-      },
-    });
+    await this.prisma.$transaction(async (tx) => {
+      const newFile = await tx.fileResource.create({
+        data: {
+          codFolder: folder,
+          originalName: query.nombreArchivo,
+          filePath: `${folder}/${file.filename}`,
+          url: 'google.com',
+          mimeType: file.mimetype,
+          extension: file.filename.split('.').pop() || '',
+          size: file.size,
+          isTemp: false,
+        },
+      });
 
-    const upload = await this.s3.upload({
-      key: `${folder}/${fileRecord.id}/${file.filename}`,
-      body: file.buffer,
-      contentType: file.mimetype,
-      metadata: {
-        originalName: file.filename,
-        field: file.fieldname,
-      },
+      await this.s3.upload({
+        key: `${folder}/${newFile.uuid}.${newFile.extension}`,
+        body: file.buffer,
+        contentType: file.mimetype,
+        metadata: {
+          originalName: file.filename,
+          field: file.fieldname,
+        },
+      });
     });
   }
 }
