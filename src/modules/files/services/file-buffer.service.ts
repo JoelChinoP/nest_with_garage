@@ -1,7 +1,8 @@
 import { S3Service } from '@modules/s3/s3.service';
 import { PrismaService } from '@modules/prisma/prisma.service';
-import { UploadQueryDto } from '../dto/UploadQueryDto';
-import { Injectable } from '@nestjs/common';
+import { UploadQueryDto } from '../dto/upload-query.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { UploadResponseDto } from '../dto';
 
 @Injectable()
 export class FileBufferService {
@@ -10,11 +11,11 @@ export class FileBufferService {
     private readonly s3: S3Service,
   ) {}
 
-  async upload(query: UploadQueryDto, file: Storage.MultipartFile) {
+  async upload(query: UploadQueryDto, file: Storage.MultipartFile): Promise<UploadResponseDto> {
     const folder = query.codFolder ?? 'all-files';
 
     // Add your Prisma operations inside the array below
-    await this.prisma.$transaction(async (tx) => {
+    const newFile = await this.prisma.$transaction(async (tx) => {
       const newFile = await tx.fileResource.create({
         data: {
           codFolder: folder,
@@ -37,6 +38,51 @@ export class FileBufferService {
           field: file.fieldname,
         },
       });
+
+      return newFile;
     });
+
+    return {
+      codigo: newFile.id,
+      cod_folder: newFile.codFolder ?? 'all-files',
+      nombre: newFile.originalName,
+      codigoAlfresco: newFile.uuid,
+    };
+  }
+
+  async exists(id: number): Promise<boolean> {
+    const resource = await this.prisma.fileResource.findUnique({
+      where: { id },
+      select: { id: true, codFolder: true, uuid: true, extension: true },
+    });
+
+    if (!resource) throw new NotFoundException('Archivo no encontrado');
+
+    const key = `${resource.codFolder}/${resource.uuid}.${resource.extension}`;
+    return await this.s3.exists(key);
+  }
+
+  async download(
+    uuid: string,
+  ): Promise<{ buffer: Buffer; mimeType: string; originalName: string; size: number }> {
+    const file = await this.prisma.fileResource.findFirst({
+      where: { uuid },
+    });
+
+    if (!file) throw new NotFoundException('Archivo no encontrado');
+
+    const path = `${file.codFolder}/${file.uuid}.${file.extension}`;
+
+    const exists = await this.s3.exists(path);
+    if (!exists) throw new NotFoundException('Archivo no encontrado en el almacenamiento');
+
+    const buffer = await this.s3.downloadFile({ key: path });
+
+    return {
+      buffer,
+      mimeType: file.mimeType ?? 'application/octet-stream',
+      originalName: file.originalName,
+      size: buffer.length,
+    };
   }
 }
