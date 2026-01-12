@@ -9,7 +9,7 @@ model FileResource {
   extension    String?   @db.VarChar(10)
   size         Int?
   uploadedBy   Int?      @map("uploaded_by")
-  isTemp       Boolean   @default(false) @map("is_temp")
+  isTemp       Boolean   @default(true) @map("is_temp")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
   deletedAt    DateTime? @map("deleted_at")
