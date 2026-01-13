@@ -17,6 +17,9 @@ async function bootstrap() {
     { bufferLogs: true, logger: ['error', 'warn', 'log', 'debug', 'verbose'] },
   );
 
+  // Configuración de la zona horaria
+  process.env.TZ = process.env.APP_TIMEZONE || 'America/Lima';
+
   // Configuración de CORS
   app.enableCors({
     origin: '*', // allowed origins
