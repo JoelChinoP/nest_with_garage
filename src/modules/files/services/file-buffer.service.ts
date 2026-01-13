@@ -21,7 +21,7 @@ export class FileBufferService {
           codFolder: folder,
           originalName: query.nombreArchivo,
           filePath: `${folder}/${file.filename}`,
-          url: 'google.com',
+          url: '',
           mimeType: file.mimetype,
           extension: file.filename.split('.').pop() || '',
           size: file.size,
