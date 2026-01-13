@@ -11,7 +11,11 @@ export class FileBufferService {
     private readonly s3: S3Service,
   ) {}
 
-  async upload(query: UploadQueryDto, file: Storage.MultipartFile): Promise<UploadResponseDto> {
+  async upload(
+    query: UploadQueryDto,
+    file: Storage.MultipartFile,
+    userId: number,
+  ): Promise<UploadResponseDto> {
     const folder = query.codFolder ?? 'all-files';
 
     // Add your Prisma operations inside the array below
@@ -21,8 +25,9 @@ export class FileBufferService {
           codFolder: folder,
           originalName: query.nombreArchivo,
           filePath: `${folder}/${file.filename}`,
-          url: '',
+          url: `http://localhost/${folder}/${file.filename}`,
           mimeType: file.mimetype,
+          uploadedBy: userId,
           extension: file.filename.split('.').pop() || '',
           size: file.size,
           isTemp: false,
@@ -34,8 +39,11 @@ export class FileBufferService {
         body: file.buffer,
         contentType: file.mimetype,
         metadata: {
-          originalName: file.filename,
-          field: file.fieldname,
+          original_name_base64: Buffer.from(newFile.originalName, 'utf-8').toString('base64'),
+          upload_field: file.fieldname,
+          upload_timestamp: new Date().toISOString(),
+          file_extension: newFile.extension || '',
+          uploaded_by: userId.toString(),
         },
       });
 

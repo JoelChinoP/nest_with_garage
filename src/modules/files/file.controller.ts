@@ -15,10 +15,12 @@ import {
   UseInterceptors,
   Res,
   Put,
+  Req,
 } from '@nestjs/common';
 import { UploadQueryDto } from './dto/upload-query.dto';
 import { FileBufferService } from './services/file-buffer.service';
 import type { FastifyReply } from 'fastify/types/reply';
+import { FastifyRequest } from 'fastify';
 
 @Controller('/')
 export class FileController {
@@ -38,11 +40,12 @@ export class FileController {
   async uploadFile(
     @Query() query: UploadQueryDto,
     @Files() data: Record<string, Storage.MultipartFile[]>,
+    @Req() req: FastifyRequest,
   ) {
     const file: Storage.MultipartFile = data['documento'][0];
     if (!file) throw new Error('No hay ningún archivo para subir');
 
-    return await this.bufferServ.upload(query, file);
+    return await this.bufferServ.upload(query, file, req.user?.id || 0);
   }
 
   @Get('files-srv:uuid/download/')

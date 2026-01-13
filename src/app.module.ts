@@ -6,6 +6,7 @@ import { AuthGuard } from '@common/guards';
 import { PrismaModule } from '@modules/prisma/prisma.module';
 import { FileModule } from '@modules/files/file.module';
 import { S3Module } from '@/modules/s3/s3.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { S3Module } from '@/modules/s3/s3.module';
       isGlobal: true, // Variables globales
       envFilePath: '.env', // Ruta al archivo .env
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     PrismaModule,
     S3Module,

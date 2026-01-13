@@ -20,7 +20,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       connectTimeout: process.env.DB_CONNECT_TIMEOUT
         ? Number(process.env.DB_CONNECT_TIMEOUT)
         : 10000,
-      timezone: process.env.TZ || 'America/Lima',
+      timezone: '+05:00',
     });
     super({
       adapter,
