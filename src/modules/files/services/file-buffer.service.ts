@@ -25,12 +25,11 @@ export class FileBufferService {
           codFolder: folder,
           originalName: query.nombreArchivo,
           filePath: `${folder}/${file.filename}`,
-          url: `http://localhost/${folder}/${file.filename}`,
+          url: `http://localhost:8900/${folder}/${file.filename}`,
           mimeType: file.mimetype,
           uploadedBy: userId,
           extension: file.filename.split('.').pop() || '',
           size: file.size,
-          isTemp: false,
         },
       });
 
