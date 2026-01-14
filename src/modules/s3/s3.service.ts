@@ -8,27 +8,43 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Readable } from 'stream';
+import { GarageConfig } from '@/config/garage.config';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class S3Service implements OnModuleInit, OnModuleDestroy {
   private s3: S3Client;
-  private bucket: string;
+  private garage: GarageConfig;
   private readonly logger = new Logger(S3Service.name);
 
-  onModuleInit() {
-    this.bucket = process.env.S3_BUCKET_NAME!;
+  constructor(private readonly configService: ConfigService) {
+    this.garage = this.configService.get<GarageConfig>('garage')!;
+  }
 
+  onModuleInit() {
     this.s3 = new S3Client({
-      region: process.env.S3_REGION!,
-      endpoint: process.env.S3_ENDPOINT,
+      region: this.garage.region,
+      endpoint: this.garage.endpoint,
       forcePathStyle: true,
       credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+        accessKeyId: this.garage.accessKeyId,
+        secretAccessKey: this.garage.secretAccessKey,
       },
     });
 
-    this.logger.log('S3: Service initialized with bucket ' + this.bucket);
+    this.logger.log(`S3: Service initialized and bucket "${this.garage.bucketName}" is accessible`);
+
+    /* // Verificar acceso al bucket al inicializar el servicio
+    try {
+      await this.s3.send(new HeadBucketCommand({ Bucket: this.garage.bucketName }));
+      this.logger.log(
+        `S3: Service initialized and bucket "${this.garage.bucketName}" is accessible`,
+      );
+    } catch (error) {
+      this.logger.error('S3: Failed to access bucket', error);
+      // Aquí podrías lanzar error si quieres que falle la inicialización
+      throw new Error('Invalid S3 credentials or bucket inaccessible');
+    } */
   }
 
   onModuleDestroy() {
@@ -44,7 +60,7 @@ export class S3Service implements OnModuleInit, OnModuleDestroy {
   }) {
     await this.s3.send(
       new PutObjectCommand({
-        Bucket: this.bucket,
+        Bucket: this.garage.bucketName,
         Key: arg.key,
         Body: arg.body,
         ContentType: arg.contentType,
@@ -52,7 +68,7 @@ export class S3Service implements OnModuleInit, OnModuleDestroy {
       }),
     );
 
-    return { bucket: this.bucket, key: arg.key };
+    return { bucket: this.garage.bucketName, key: arg.key };
   }
 
   /* ===================== DOWNLOAD URL ===================== */
@@ -60,7 +76,7 @@ export class S3Service implements OnModuleInit, OnModuleDestroy {
     return getSignedUrl(
       this.s3,
       new GetObjectCommand({
-        Bucket: this.bucket,
+        Bucket: this.garage.bucketName,
         Key: arg.key,
       }),
       { expiresIn: arg.expires },
@@ -70,7 +86,7 @@ export class S3Service implements OnModuleInit, OnModuleDestroy {
   async downloadFile(arg: { key: string }): Promise<Buffer> {
     const res = await this.s3.send(
       new GetObjectCommand({
-        Bucket: this.bucket,
+        Bucket: this.garage.bucketName,
         Key: arg.key,
       }),
     );
@@ -91,7 +107,7 @@ export class S3Service implements OnModuleInit, OnModuleDestroy {
   async head(arg: { key: string }) {
     const r = await this.s3.send(
       new HeadObjectCommand({
-        Bucket: this.bucket,
+        Bucket: this.garage.bucketName,
         Key: arg.key,
       }),
     );
@@ -109,7 +125,7 @@ export class S3Service implements OnModuleInit, OnModuleDestroy {
   async delete(arg: { key: string }) {
     await this.s3.send(
       new DeleteObjectCommand({
-        Bucket: this.bucket,
+        Bucket: this.garage.bucketName,
         Key: arg.key,
       }),
     );
@@ -118,7 +134,7 @@ export class S3Service implements OnModuleInit, OnModuleDestroy {
   /* ===================== EXISTS ===================== */
   async exists(key: string): Promise<boolean> {
     try {
-      await this.s3.send(new HeadObjectCommand({ Bucket: this.bucket, Key: key }));
+      await this.s3.send(new HeadObjectCommand({ Bucket: this.garage.bucketName, Key: key }));
 
       return true;
     } catch (err: any) {

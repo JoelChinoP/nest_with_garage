@@ -1,17 +1,42 @@
 #!/bin/bash
 
-# --- CORRECCIÓN PARA GIT BASH ---
-export MSYS_NO_PATHCONV=1
-# -------------------------------
+# --- DETECCIÓN DE SISTEMA OPERATIVO ---
+detect_os() {
+    case "$(uname -s)" in
+        MINGW* | MSYS* | CYGWIN*)
+            OS="windows"
+            export MSYS_NO_PATHCONV=1
+            ;;
+        Linux*)
+            OS="linux"
+            ;;
+        Darwin*)
+            OS="mac"
+            ;;
+        *)
+            OS="unknown"
+            ;;
+    esac
+}
+
+detect_os
+# ---------------------------------------
 
 # Detener si hay error
 set -e
 
-# Colores
-GREEN='\033[0;32m'
-CYAN='\033[0;36m'
-RED='\033[0;31m'
-NC='\033[0m'
+# Colores (compatibles con Git Bash y Linux)
+if [ "$OS" = "windows" ]; then
+    GREEN='\033[0;32m'
+    CYAN='\033[0;36m'
+    RED='\033[0;31m'
+    NC='\033[0m'
+else
+    GREEN='\033[0;32m'
+    CYAN='\033[0;36m'
+    RED='\033[0;31m'
+    NC='\033[0m'
+fi
 
 # Valores por defecto
 ENVIRONMENT="dev" # prod
@@ -48,22 +73,20 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo -e "${CYAN}🚀 Iniciando setup (Docker Compose) para: $BUCKET_NAME${NC}"
+echo -e "${CYAN}🚀 Iniciando setup (Docker Compose)${NC}"
+echo -e "${CYAN}📟 Sistema: $OS | Entorno: $ENVIRONMENT | Bucket: $BUCKET_NAME | Disco: $DISK_SIZE${NC}"
 
 # 1. Levantar contenedores
-# Usamos --wait para que espere a que esté 'Healthy' si tienes healthchecks, si no, espera normal.
-
 docker compose up -d --wait garage
+
 if [ "$ENVIRONMENT" == "dev" ]; then
-    docker update --memory 400m --memory-swap -1 cross-garage
+    docker update --memory 400m --memory-swap -1 cross-garage 2>/dev/null || true
 fi
 
 echo "⏳ Esperando 5s para inicialización..."
 sleep 5
 
 # 2. Obtener ID
-# CAMBIO: Usamos 'docker compose exec -T' en lugar de 'docker exec'
-# -T deshabilita la pseudo-tty para que la captura de la variable sea limpia
 echo -e "${CYAN}--> Obteniendo Node ID...${NC}"
 NODE_ID=$(docker compose exec -T garage /garage node id | head -n 1 | cut -d'@' -f1)
 
@@ -72,8 +95,8 @@ if [ -z "$NODE_ID" ]; then
     exit 1
 fi
 
-# Limpiamos posibles caracteres de retorno de carro (\r) que Windows/Compose a veces meten
-NODE_ID=$(echo "$NODE_ID" | tr -d '\r')
+# Limpiar caracteres de control (funciona en ambos sistemas)
+NODE_ID=$(echo "$NODE_ID" | tr -d '\r\n' | xargs)
 
 echo -e "${GREEN}✅ ID detectado: $NODE_ID${NC}"
 
@@ -90,9 +113,9 @@ docker compose exec -T garage /garage bucket create "$BUCKET_NAME" 2>/dev/null |
 KEY_NAME="${BUCKET_NAME}-key"
 KEY_OUTPUT=$(docker compose exec -T garage /garage key create "$KEY_NAME")
 
-# Extraer claves
-ACCESS_KEY=$(echo "$KEY_OUTPUT" | grep "Key ID" | awk '{print $3}' | tr -d '\r')
-SECRET_KEY=$(echo "$KEY_OUTPUT" | grep "Secret key" | awk '{print $3}' | tr -d '\r')
+# Extraer claves (limpiando caracteres de control)
+ACCESS_KEY=$(echo "$KEY_OUTPUT" | grep "Key ID" | awk '{print $3}' | tr -d '\r\n' | xargs)
+SECRET_KEY=$(echo "$KEY_OUTPUT" | grep "Secret key" | awk '{print $3}' | tr -d '\r\n' | xargs)
 
 echo -e "${GREEN}✅ Claves creadas.${NC}"
 echo "   Access Key: $ACCESS_KEY"
@@ -114,23 +137,35 @@ fi
 # Copiar .env.example a .env
 cp "$ENV_EXAMPLE" "$ENV_FILE"
 
-# Actualizar las variables de S3 en el .env
+# Función para actualizar variables en .env (compatible con ambos sistemas)
+update_env_var() {
+    local key=$1
+    local value=$2
+    local file=$3
+    
+    if [ "$OS" = "windows" ]; then
+        # En Git Bash, sed funciona diferente
+        sed -i "s|^${key}=.*|${key}=${value}|" "$file"
+    else
+        # En Linux
+        sed -i "s|^${key}=.*|${key}=${value}|" "$file"
+    fi
+}
+
+# Actualizar variables según el entorno
 if [ "$ENVIRONMENT" == "prod" ]; then
-    sed -i.bak "s|NODE_ENV=.*|NODE_ENV=production|" "$ENV_FILE"
-    sed -i.bak "s|DB_DEBUG=.*|DB_DEBUG=false|" "$ENV_FILE"
+    update_env_var "NODE_ENV" "production" "$ENV_FILE"
+    update_env_var "DB_DEBUG" "false" "$ENV_FILE"
 else
-    sed -i.bak "s|NODE_ENV=.*|NODE_ENV=development|" "$ENV_FILE"
-    sed -i.bak "s|DB_DEBUG=.*|DB_DEBUG=true|" "$ENV_FILE"
+    update_env_var "NODE_ENV" "development" "$ENV_FILE"
+    update_env_var "DB_DEBUG" "true" "$ENV_FILE"
 fi
 
-
-sed -i.bak "s|S3_ENDPOINT=.*|S3_ENDPOINT=http://garage:3900|" "$ENV_FILE"
-sed -i.bak "s|S3_ACCESS_KEY_ID=.*|S3_ACCESS_KEY_ID=$ACCESS_KEY|" "$ENV_FILE"
-sed -i.bak "s|S3_SECRET_ACCESS_KEY=.*|S3_SECRET_ACCESS_KEY=$SECRET_KEY|" "$ENV_FILE"
-sed -i.bak "s|S3_BUCKET_NAME=.*|S3_BUCKET_NAME=$BUCKET_NAME|" "$ENV_FILE"
-
-# Eliminar archivo de backup creado por sed
-rm -f "${ENV_FILE}.bak"
+# Actualizar variables de S3
+update_env_var "S3_ENDPOINT" "http://garage:3900" "$ENV_FILE"
+update_env_var "S3_ACCESS_KEY_ID" "$ACCESS_KEY" "$ENV_FILE"
+update_env_var "S3_SECRET_ACCESS_KEY" "$SECRET_KEY" "$ENV_FILE"
+update_env_var "S3_BUCKET_NAME" "$BUCKET_NAME" "$ENV_FILE"
 
 echo -e "${GREEN}✅ Archivo .env creado y configurado.${NC}"
 
@@ -138,48 +173,31 @@ echo -e "${GREEN}✅ Archivo .env creado y configurado.${NC}"
 echo -e "${CYAN}--> Levantando resto de servicios...${NC}"
 
 docker compose up -d --wait garage-ui
+
 if [ "$ENVIRONMENT" == "dev" ]; then
-    docker update --memory 200m --memory-swap -1 cross-garage-ui
+    docker update --memory 200m --memory-swap -1 cross-garage-ui 2>/dev/null || true
 fi
 
-
-# Levantar cross-node que ahora leerá las variables del archivo .env
+# Levantar cross-node
 if [ "$ENVIRONMENT" == "prod" ]; then
     docker compose up -d --wait cross-node
 else
-    cat <<EOF > compose.temp.yml
+    # Crear archivo temporal de compose
+    cat > compose.temp.yml <<EOF
 services:
   cross-node:
     volumes:
       - ./node_modules:/app/node_modules
     mem_limit: 400m
+    command: >
+        sh -c "
+        npm ci --no-audit --no-fund --legacy-peer-deps && npx nodemon --delay 1s"
 EOF
 
     docker compose -f compose.yaml -f compose.temp.yml up -d --wait cross-node
-    rm compose.temp.yml
+    rm -f compose.temp.yml
 fi
 
 echo -e "\n${GREEN}🎉 SETUP COMPLETADO EXITOSAMENTE${NC}"
 echo -e "${CYAN}📄 Las credenciales han sido guardadas en: $ENV_FILE${NC}"
-
-# # 5. UI y Backend
-# echo -e "${CYAN}--> Levantando resto de servicios...${NC}"
-# docker compose up -d garage-ui
-
-# # Exportar variables para que el siguiente comando las tome
-# export S3_ACCESS_KEY_ID="$ACCESS_KEY"
-# export S3_SECRET_ACCESS_KEY="$SECRET_KEY"
-# export S3_BUCKET_NAME="$BUCKET_NAME"
-# export S3_ENDPOINT="http://garage:3900"
-# export S3_REGION="garage"
-# export DB_DEBUG="false"
-
-# # Levantar cross-node inyectando las variables
-# S3_ACCESS_KEY_ID=$ACCESS_KEY \
-# S3_SECRET_ACCESS_KEY=$SECRET_KEY \
-# S3_BUCKET_NAME=$BUCKET_NAME \
-# S3_REGION="garage" \
-# DB_DEBUG="false" \
-# docker compose up cross-node
-
-# echo -e "\n${GREEN}🎉 SETUP COMPLETADO EXITOSAMENTE${NC}"
+echo -e "${CYAN}📟 Sistema: $OS${NC}"

@@ -1,9 +1,8 @@
-import fs from 'fs';
+import { existsSync, readFileSync } from 'fs';
 
 export function isDocker(): boolean {
   return (
-    fs.existsSync('/.dockerenv') ||
-    (fs.existsSync('/proc/1/cgroup') &&
-      fs.readFileSync('/proc/1/cgroup', 'utf8').includes('docker'))
+    existsSync('/.dockerenv') ||
+    (existsSync('/proc/1/cgroup') && readFileSync('/proc/1/cgroup', 'utf8').includes('docker'))
   );
 }

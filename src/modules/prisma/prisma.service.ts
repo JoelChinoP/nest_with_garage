@@ -2,36 +2,36 @@ import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/commo
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import { PrismaClient } from './generated/client/client';
 import { filterSoftDeleted, softDelete } from './prisma.extensions';
+import { ConfigService } from '@nestjs/config';
+import { DatabaseConfig } from '@/config/database.config';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrismaService.name);
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
+    const db = configService.get<DatabaseConfig>('database')!;
+
     const adapter = new PrismaMariaDb({
-      host: process.env.DB_HOST || 'localhost',
-      port: Number(process.env.DB_PORT) || 3306,
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'db',
-      connectionLimit: process.env.DB_CONNECTION_LIMIT
-        ? Number(process.env.DB_CONNECTION_LIMIT)
-        : 10,
-      connectTimeout: process.env.DB_CONNECT_TIMEOUT
-        ? Number(process.env.DB_CONNECT_TIMEOUT)
-        : 7500,
+      host: db.host,
+      port: db.port,
+      user: db.user,
+      password: db.password,
+      database: db.name,
       timezone: '+05:00',
+      connectionLimit: db.connectionLimit,
+      connectTimeout: db.timeout,
     });
+
     super({
       adapter,
-      log:
-        process.env.DB_DEBUG === 'true'
-          ? [
-              { emit: 'event', level: 'query' },
-              { emit: 'stdout', level: 'error' },
-              { emit: 'stdout', level: 'warn' },
-            ]
-          : [{ emit: 'stdout', level: 'error' }],
+      log: db.debug
+        ? [
+            { emit: 'event', level: 'query' },
+            { emit: 'stdout', level: 'error' },
+            { emit: 'stdout', level: 'warn' },
+          ]
+        : [{ emit: 'stdout', level: 'error' }],
     });
 
     const extended = this.$extends(softDelete).$extends(filterSoftDeleted);

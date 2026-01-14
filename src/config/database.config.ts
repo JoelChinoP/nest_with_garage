@@ -1,15 +1,31 @@
-const database = {
-  connection: process.env.DB_CONNECTION ?? 'mysql',
-  port: process.env.DB_PORT ?? '5432',
-  host: process.env.DB_HOST ?? 'localhost',
-  user: process.env.DB_USER ?? 'user',
-  password: process.env.DB_PASSWORD ?? 'password',
-  name: process.env.DB_NAME ?? 'mydb',
-  timezone: process.env.DB_TIMEZONE ?? 'America/Lima',
-};
+import { bool, num, str } from '@/common/env/validator';
+import { registerAs } from '@nestjs/config';
 
-export const databaseConfig = () => ({
-  url: `postgresql://${database.user}:${database.password}@${database.host}:${database.port}/${database.name}?timezone=${encodeURIComponent(database.timezone)}`,
-  timeout: parseInt(process.env.DB_CONNECT_TIMEOUT ?? '10000', 10),
-  debug: process.env.DB_DEBUG === 'true',
-});
+export const databaseConfig = registerAs(
+  'database',
+  (): DatabaseConfig => ({
+    connection: str('DB_CONNECTION', 'mysql'),
+    port: num('DB_PORT', 5432),
+    host: str('DB_HOST'),
+    user: str('DB_USERNAME', 'root'),
+    password: str('DB_PASSWORD', 'password'),
+    name: str('DB_NAME', 'mydb'),
+    timezone: str('DB_TIMEZONE', 'America/Lima'),
+    connectionLimit: num('DB_CONNECTION_LIMIT', 10),
+    timeout: num('DB_CONNECT_TIMEOUT', 5000),
+    debug: bool('DB_DEBUG', true),
+  }),
+);
+
+export interface DatabaseConfig {
+  connection: string;
+  port: number;
+  host: string;
+  user: string;
+  password: string;
+  name: string;
+  timezone: string;
+  connectionLimit: number;
+  timeout: number;
+  debug: boolean;
+}

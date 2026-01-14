@@ -6,16 +6,18 @@ import { AppLogger } from '@config/logger.config';
 import multipart from '@fastify/multipart';
 import { TransformInterceptor } from './common/interceptors';
 import { CatchEverythingFilter } from './common/filters/catch-everything.filter';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
-  const nodeEnv = process.env.NODE_ENV || 'development';
-
   // Uso de Fastify como servidor HTTP
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ routerOptions: { ignoreTrailingSlash: true } }),
     { bufferLogs: true, logger: ['error', 'warn', 'log', 'debug', 'verbose'] },
   );
+
+  const config = app.get<ConfigService>(ConfigService);
+  const nodeEnv = config.getOrThrow<string>('app.nodeEnv');
 
   // Configuración de CORS
   app.enableCors({
@@ -75,7 +77,9 @@ async function bootstrap() {
 
   // Inicio del servidor en el puerto especificado o 3000 por defecto
   await app.listen(process.env.APP_PORT ?? 3000, '0.0.0.0', () => {
-    console.log(`🚀 Application is running in ${nodeEnv} mode on: ${process.env.APP_PORT ?? 3000}`);
+    console.log(
+      `\n🚀 Application is running in ${nodeEnv} mode on: ${process.env.APP_PORT ?? 3000}\n`,
+    );
   });
 }
 

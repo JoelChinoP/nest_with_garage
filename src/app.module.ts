@@ -7,12 +7,16 @@ import { PrismaModule } from '@modules/prisma/prisma.module';
 import { FileModule } from '@modules/files/file.module';
 import { S3Module } from '@/modules/s3/s3.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { appConfig } from './config/app.config';
+import { databaseConfig } from './config/database.config';
+import { garageConfig } from './config/garage.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Variables globales
-      envFilePath: '.env', // Ruta al archivo .env
+      load: [appConfig, databaseConfig, garageConfig],
+      isGlobal: true, // make ConfigModule global to avoid importing it in other modules
+      cache: true,
     }),
     ScheduleModule.forRoot(),
     AuthModule,
