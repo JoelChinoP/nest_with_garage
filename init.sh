@@ -186,13 +186,13 @@ else
     cat > compose.temp.yml <<EOF
 services:
   cross-node:
-    volumes:
-      - ./node_modules:/app/node_modules
-    mem_limit: 400m
+    mem_limit: 700m
     command: >
         sh -c "
         npm ci --no-audit --no-fund --legacy-peer-deps && npx nodemon --delay 1s"
 EOF
+    # volumes:
+    #   - ./node_modules:/app/node_modules
 
     docker compose -f compose.yaml -f compose.temp.yml up -d --wait cross-node
     rm -f compose.temp.yml
