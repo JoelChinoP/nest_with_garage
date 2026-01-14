@@ -1,4 +1,3 @@
-
 # Manual de Ejecución — Plataforma Cross Garage
 
 <p align="center">
@@ -59,12 +58,12 @@ El script `init.sh` automatiza todo el proceso de despliegue y configuración:
 
 #### Opciones disponibles:
 
-| Opción            | Descripción                                 | Valor por defecto |
-|-------------------|---------------------------------------------|-------------------|
-| `--environment` o `-e` | Entorno de ejecución (`dev` o `prod`)         | dev               |
-| `--bucket` o `-b`      | Nombre del bucket S3 a crear                   | sim-cross         |
-| `--disk` o `-d`        | Tamaño del disco de datos (ej: 100G)           | 100G              |
-| `--help` o `-h`        | Muestra la ayuda                              |                   |
+| Opción                 | Descripción                           | Valor por defecto |
+| ---------------------- | ------------------------------------- | ----------------- |
+| `--environment` o `-e` | Entorno de ejecución (`dev` o `prod`) | dev               |
+| `--bucket` o `-b`      | Nombre del bucket S3 a crear          | sim-cross         |
+| `--disk` o `-d`        | Tamaño del disco de datos (ej: 100G)  | 100G              |
+| `--help` o `-h`        | Muestra la ayuda                      |                   |
 
 #### Ejemplo de uso:
 
@@ -94,12 +93,12 @@ Todo el proceso es automático y deja el entorno listo para desarrollo o pruebas
 
 ## Acceso a los servicios
 
-| Servicio         | URL de acceso                | Descripción                  |
-|------------------|-----------------------------|------------------------------|
-| API S3           | http://localhost:3900        | Endpoint S3 compatible       |
-| Admin Garage     | http://localhost:3903        | API de administración Garage |
-| Web UI           | http://localhost:3909        | Interfaz web de Garage       |
-| Backend (API)    | http://localhost:8900        | API principal NestJS         |
+| Servicio      | URL de acceso         | Descripción                  |
+| ------------- | --------------------- | ---------------------------- |
+| API S3        | http://localhost:3900 | Endpoint S3 compatible       |
+| Admin Garage  | http://localhost:3903 | API de administración Garage |
+| Web UI        | http://localhost:3909 | Interfaz web de Garage       |
+| Backend (API) | http://localhost:8900 | API principal NestJS         |
 
 > **Nota:** Los puertos pueden cambiar si modificas el archivo `compose.yaml`.
 
