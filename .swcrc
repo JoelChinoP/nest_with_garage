@@ -1,6 +1,9 @@
 {
   "$schema": "https://swc.rs/schema.json",
-  "sourceMaps": true,
+  "sourceMaps": false, 
+  "module": {
+    "type": "commonjs"
+  },
   "jsc": {
     "target": "es2022",
     "parser": {
@@ -10,13 +13,11 @@
     },
     "transform": {
       "legacyDecorator": true,
-      "decoratorMetadata": true
+      "decoratorMetadata": true,
+      "useDefineForClassFields": false
     },
     "keepClassNames": true,
     "baseUrl": "./"
-  },
-  "module": {
-    "type": "commonjs"
   },
   "minify": false
 }

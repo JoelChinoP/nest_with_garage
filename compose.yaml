@@ -2,7 +2,7 @@ services:
   garage:
       image: dxflrs/garage:v2.1.0
       volumes:
-        - ./garage.dev.toml:/etc/garage.toml:ro
+        - ./garage.toml:/etc/garage.toml:ro
         - ./garage/garage_meta:/var/garage/meta
         - ./garage/garage_data:/var/garage/data
         - ./garage/snapshots:/var/garage/snapshots
@@ -14,29 +14,29 @@ services:
       networks: [cross-network]
 
   cross-node:
-      build:
-        context: .
-        dockerfile: ./Dockerfile
-      env_file:
-        - ./.env
-      environment:
-        - NODE_ENV=production
-        - TZ=America/Lima
-        - S3_ENDPOINT=http://garage:3900
-        - S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID}
-        - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
-        - S3_BUCKET_NAME=${S3_BUCKET_NAME}
-        - S3_REGION=${S3_REGION}
-      command: ["main.js"]
+      image: node:24-bookworm-slim
+      working_dir: /app
+      volumes:
+        - ./src:/app/src
+        - ./package.json:/app/package.json
+        - ./package-lock.json:/app/package-lock.json
+        - ./nest-cli.json:/app/nest-cli.json
+        - ./tsconfig.json:/app/tsconfig.json
+        - ./nodemon.json:/app/nodemon.json
+        - ./.swcrc:/app/.swcrc
+        - ./.env:/app/.env
+      command: >
+        sh -c "
+        npm ci --no-audit --no-fund --legacy-peer-deps && npx nodemon"
       ports:
-        - 8900:${APP_PORT}
+        - 8900:${APP_PORT:-8900}
       depends_on: [garage]
       networks: [cross-network]
 
   garage-ui:
     image: khairul169/garage-webui:latest
     volumes:
-      - ./garage.dev.toml:/etc/garage.toml:ro
+      - ./garage.toml:/etc/garage.toml:ro
     environment:
       API_BASE_URL: "http://garage:3903"
       S3_ENDPOINT_URL: "http://garage:3900"

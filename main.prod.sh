@@ -15,6 +15,7 @@ NC='\033[0m'
 
 # Argumento del nombre del bucket
 BUCKET_NAME=${1:-sim-cross}
+DISK_SIZE=${2:-60G}
 
 echo -e "${CYAN}🚀 Iniciando setup (Modo Docker Compose) para: $BUCKET_NAME${NC}"
 
@@ -42,7 +43,7 @@ echo -e "${GREEN}✅ ID detectado: $NODE_ID${NC}"
 
 # 3. Layout
 echo -e "${CYAN}--> Configurando Layout...${NC}"
-docker compose exec -T garage /garage layout assign -z dc1 -c 100G "$NODE_ID" > /dev/null
+docker compose exec -T garage /garage layout assign -z dc1 -c "$DISK_SIZE" "$NODE_ID" > /dev/null
 docker compose exec -T garage /garage layout apply --version 1 > /dev/null
 echo -e "${GREEN}✅ Layout aplicado.${NC}"
 
@@ -63,24 +64,61 @@ echo "   Access Key: $ACCESS_KEY"
 # Permisos
 docker compose exec -T garage /garage bucket allow --read --write "$BUCKET_NAME" --key "$KEY_NAME" > /dev/null
 
-# 5. UI y Backend
+# 5. Crear archivo .env desde .env.example
+echo -e "${CYAN}--> Creando archivo .env...${NC}"
+
+ENV_FILE=".env"
+ENV_EXAMPLE=".env.example"
+
+if [ ! -f "$ENV_EXAMPLE" ]; then
+    echo -e "${RED}❌ Error: No se encuentra el archivo $ENV_EXAMPLE${NC}"
+    exit 1
+fi
+
+# Copiar .env.example a .env
+cp "$ENV_EXAMPLE" "$ENV_FILE"
+
+# Actualizar las variables de S3 en el .env
+sed -i.bak "s|NODE_ENV=.*|NODE_ENV=production|" "$ENV_FILE"
+sed -i.bak "s|DB_DEBUG=.*|DB_DEBUG=false|" "$ENV_FILE"
+sed -i.bak "s|S3_ENDPOINT=.*|S3_ENDPOINT=http://garage:3900|" "$ENV_FILE"
+sed -i.bak "s|S3_ACCESS_KEY_ID=.*|S3_ACCESS_KEY_ID=$ACCESS_KEY|" "$ENV_FILE"
+sed -i.bak "s|S3_SECRET_ACCESS_KEY=.*|S3_SECRET_ACCESS_KEY=$SECRET_KEY|" "$ENV_FILE"
+sed -i.bak "s|S3_BUCKET_NAME=.*|S3_BUCKET_NAME=$BUCKET_NAME|" "$ENV_FILE"
+
+# Eliminar archivo de backup creado por sed
+rm -f "${ENV_FILE}.bak"
+
+echo -e "${GREEN}✅ Archivo .env creado y configurado.${NC}"
+
+# 6. UI y Backend
 echo -e "${CYAN}--> Levantando resto de servicios...${NC}"
 docker compose up -d garage-ui
 
-# Exportar variables para que el siguiente comando las tome
-export S3_ACCESS_KEY_ID="$ACCESS_KEY"
-export S3_SECRET_ACCESS_KEY="$SECRET_KEY"
-export S3_BUCKET_NAME="$BUCKET_NAME"
-export S3_ENDPOINT="http://garage:3900"
-export S3_REGION="garage"
-export DB_DEBUG="false"
-
-# Levantar cross-node inyectando las variables
-S3_ACCESS_KEY_ID=$ACCESS_KEY \
-S3_SECRET_ACCESS_KEY=$SECRET_KEY \
-S3_BUCKET_NAME=$BUCKET_NAME \
-S3_REGION="garage" \
-DB_DEBUG="false" \
-docker compose up cross-node
+# Levantar cross-node que ahora leerá las variables del archivo .env
+docker compose up -d cross-node
 
 echo -e "\n${GREEN}🎉 SETUP COMPLETADO EXITOSAMENTE${NC}"
+echo -e "${CYAN}📄 Las credenciales han sido guardadas en: $ENV_FILE${NC}"
+
+# # 5. UI y Backend
+# echo -e "${CYAN}--> Levantando resto de servicios...${NC}"
+# docker compose up -d garage-ui
+
+# # Exportar variables para que el siguiente comando las tome
+# export S3_ACCESS_KEY_ID="$ACCESS_KEY"
+# export S3_SECRET_ACCESS_KEY="$SECRET_KEY"
+# export S3_BUCKET_NAME="$BUCKET_NAME"
+# export S3_ENDPOINT="http://garage:3900"
+# export S3_REGION="garage"
+# export DB_DEBUG="false"
+
+# # Levantar cross-node inyectando las variables
+# S3_ACCESS_KEY_ID=$ACCESS_KEY \
+# S3_SECRET_ACCESS_KEY=$SECRET_KEY \
+# S3_BUCKET_NAME=$BUCKET_NAME \
+# S3_REGION="garage" \
+# DB_DEBUG="false" \
+# docker compose up cross-node
+
+# echo -e "\n${GREEN}🎉 SETUP COMPLETADO EXITOSAMENTE${NC}"
