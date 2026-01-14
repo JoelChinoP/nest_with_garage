@@ -1,6 +1,7 @@
 services:
   garage:
       image: dxflrs/garage:v2.1.0
+      container_name: cross-garage
       volumes:
         - ./garage.toml:/etc/garage.toml:ro
         - ./garage/garage_meta:/var/garage/meta
@@ -15,6 +16,7 @@ services:
 
   cross-node:
       image: node:24-bookworm-slim
+      container_name: cross-node
       working_dir: /app
       volumes:
         - ./src:/app/src
@@ -35,6 +37,7 @@ services:
 
   garage-ui:
     image: khairul169/garage-webui:latest
+    container_name: cross-garage-ui
     volumes:
       - ./garage.toml:/etc/garage.toml:ro
     environment:

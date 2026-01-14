@@ -13,15 +13,51 @@ CYAN='\033[0;36m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-# Argumento del nombre del bucket
-BUCKET_NAME=${1:-sim-cross}
-DISK_SIZE=${2:-60G}
+# Valores por defecto
+ENVIRONMENT="dev" # prod
+BUCKET_NAME="sim-cross"
+DISK_SIZE="100G"
 
-echo -e "${CYAN}🚀 Iniciando setup (Modo Docker Compose) para: $BUCKET_NAME${NC}"
+# Parsear argumentos
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --environment|-e)
+            ENVIRONMENT="$2"
+            shift 2
+            ;;
+        --bucket|-b)
+            BUCKET_NAME="$2"
+            shift 2
+            ;;
+        --disk|-d)
+            DISK_SIZE="$2"
+            shift 2
+            ;;
+        --help|-h)
+            echo "Uso: $0 [opciones]"
+            echo "  --environment, -e    Entorno (default: dev)"
+            echo "  --bucket, -b         Nombre del bucket (default: sim-cross)"
+            echo "  --disk, -d           Tamaño del disco (default: 100G)"
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}❌ Argumento desconocido: $1${NC}"
+            echo "Usa --help para ver las opciones disponibles"
+            exit 1
+            ;;
+    esac
+done
+
+echo -e "${CYAN}🚀 Iniciando setup (Docker Compose) para: $BUCKET_NAME${NC}"
 
 # 1. Levantar contenedores
 # Usamos --wait para que espere a que esté 'Healthy' si tienes healthchecks, si no, espera normal.
-docker compose up -d garage
+
+docker compose up -d --wait garage
+if [ "$ENVIRONMENT" == "dev" ]; then
+    docker update --memory 400m --memory-swap -1 cross-garage
+fi
+
 echo "⏳ Esperando 5s para inicialización..."
 sleep 5
 
@@ -79,8 +115,15 @@ fi
 cp "$ENV_EXAMPLE" "$ENV_FILE"
 
 # Actualizar las variables de S3 en el .env
-sed -i.bak "s|NODE_ENV=.*|NODE_ENV=production|" "$ENV_FILE"
-sed -i.bak "s|DB_DEBUG=.*|DB_DEBUG=false|" "$ENV_FILE"
+if [ "$ENVIRONMENT" == "prod" ]; then
+    sed -i.bak "s|NODE_ENV=.*|NODE_ENV=production|" "$ENV_FILE"
+    sed -i.bak "s|DB_DEBUG=.*|DB_DEBUG=false|" "$ENV_FILE"
+else
+    sed -i.bak "s|NODE_ENV=.*|NODE_ENV=development|" "$ENV_FILE"
+    sed -i.bak "s|DB_DEBUG=.*|DB_DEBUG=true|" "$ENV_FILE"
+fi
+
+
 sed -i.bak "s|S3_ENDPOINT=.*|S3_ENDPOINT=http://garage:3900|" "$ENV_FILE"
 sed -i.bak "s|S3_ACCESS_KEY_ID=.*|S3_ACCESS_KEY_ID=$ACCESS_KEY|" "$ENV_FILE"
 sed -i.bak "s|S3_SECRET_ACCESS_KEY=.*|S3_SECRET_ACCESS_KEY=$SECRET_KEY|" "$ENV_FILE"
@@ -93,10 +136,28 @@ echo -e "${GREEN}✅ Archivo .env creado y configurado.${NC}"
 
 # 6. UI y Backend
 echo -e "${CYAN}--> Levantando resto de servicios...${NC}"
-docker compose up -d garage-ui
+
+docker compose up -d --wait garage-ui
+if [ "$ENVIRONMENT" == "dev" ]; then
+    docker update --memory 400m --memory-swap -1 cross-garage-ui
+fi
+
 
 # Levantar cross-node que ahora leerá las variables del archivo .env
-docker compose up -d cross-node
+if [ "$ENVIRONMENT" == "prod" ]; then
+    docker compose up -d --wait cross-node
+else
+    cat <<EOF > compose.temp.yml
+services:
+  cross-node:
+    volumes:
+      - ./node_modules:/app/node_modules
+    mem_limit: 400m
+EOF
+
+    docker compose -f compose.yaml -f compose.temp.yml up -d --wait cross-node
+    rm compose.temp.yml
+fi
 
 echo -e "\n${GREEN}🎉 SETUP COMPLETADO EXITOSAMENTE${NC}"
 echo -e "${CYAN}📄 Las credenciales han sido guardadas en: $ENV_FILE${NC}"
