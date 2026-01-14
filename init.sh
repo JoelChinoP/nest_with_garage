@@ -139,7 +139,7 @@ echo -e "${CYAN}--> Levantando resto de servicios...${NC}"
 
 docker compose up -d --wait garage-ui
 if [ "$ENVIRONMENT" == "dev" ]; then
-    docker update --memory 400m --memory-swap -1 cross-garage-ui
+    docker update --memory 200m --memory-swap -1 cross-garage-ui
 fi
 
 
