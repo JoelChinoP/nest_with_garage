@@ -43,10 +43,7 @@ export class FileController {
     @Req() req: FastifyRequest,
   ) {
     const file: Storage.MultipartFile = data['documento'][0];
-
     if (!file) throw new Error('No hay ningún archivo para subir');
-
-    console.log('Uploading file:', file.fieldname, 'Size:', file.size);
 
     return await this.bufferServ.upload(query, file, req.user?.id || 0);
   }
@@ -119,7 +116,7 @@ export class FileController {
     return {
       codigo: 200,
       mensaje: 'Archivo eliminado correctamente',
-      data: null,
+      data: id % 2,
     };
   }
 
