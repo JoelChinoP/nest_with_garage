@@ -69,7 +69,7 @@ async function bootstrap() {
   // Configuración de manejo de multipart/form-data
   await app.register(multipart, {
     limits: {
-      fileSize: 50 * 1024 * 1024, // 50 MB
+      fileSize: (Number(process.env.MAX_FILE_SIZE_MB) || 50) * 1024 * 1024, // Default 50 MB
     },
   });
 

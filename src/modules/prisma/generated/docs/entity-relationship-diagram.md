@@ -13,8 +13,8 @@ erDiagram
   String(36) uuid UK
   String(255) cod_folder "nullable"
   String(500) original_name
-  String(500) file_path
-  String(500) url
+  String(500) file_path "nullable"
+  String(500) url "nullable"
   String(100) mime_type "nullable"
   String(10) extension "nullable"
   Int size "nullable"

@@ -24,7 +24,16 @@ export class UploadQueryDto {
   @IsOptional()
   detalleDocSustento?: string;
 
-  @Transform(({ value }: { value: string }) => value.trim())
+  @Transform(({ value }: { value: string }) => {
+    if (!value) return value;
+
+    return value
+      .normalize('NFD') // separa tildes
+      .replace(/[\u0300-\u036f]/g, '') // elimina tildes
+      .replace(/[^\w\s.-]/g, '') // elimina símbolos raros
+      .replace(/\s+/g, ' ') // colapsa espacios
+      .trim();
+  })
   @IsString()
   @IsNotEmpty({ message: 'El nombre del archivo es obligatorio' })
   @MinLength(1, { message: 'El nombre del archivo no puede estar vacío' })

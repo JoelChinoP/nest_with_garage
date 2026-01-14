@@ -246,8 +246,8 @@ export type FileResourceGroupByOutputType = {
   uuid: string
   codFolder: string | null
   originalName: string
-  filePath: string
-  url: string
+  filePath: string | null
+  url: string | null
   mimeType: string | null
   extension: string | null
   size: number | null
@@ -286,8 +286,8 @@ export type FileResourceWhereInput = {
   uuid?: Prisma.StringFilter<"FileResource"> | string
   codFolder?: Prisma.StringNullableFilter<"FileResource"> | string | null
   originalName?: Prisma.StringFilter<"FileResource"> | string
-  filePath?: Prisma.StringFilter<"FileResource"> | string
-  url?: Prisma.StringFilter<"FileResource"> | string
+  filePath?: Prisma.StringNullableFilter<"FileResource"> | string | null
+  url?: Prisma.StringNullableFilter<"FileResource"> | string | null
   mimeType?: Prisma.StringNullableFilter<"FileResource"> | string | null
   extension?: Prisma.StringNullableFilter<"FileResource"> | string | null
   size?: Prisma.IntNullableFilter<"FileResource"> | number | null
@@ -303,8 +303,8 @@ export type FileResourceOrderByWithRelationInput = {
   uuid?: Prisma.SortOrder
   codFolder?: Prisma.SortOrderInput | Prisma.SortOrder
   originalName?: Prisma.SortOrder
-  filePath?: Prisma.SortOrder
-  url?: Prisma.SortOrder
+  filePath?: Prisma.SortOrderInput | Prisma.SortOrder
+  url?: Prisma.SortOrderInput | Prisma.SortOrder
   mimeType?: Prisma.SortOrderInput | Prisma.SortOrder
   extension?: Prisma.SortOrderInput | Prisma.SortOrder
   size?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -324,8 +324,8 @@ export type FileResourceWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.FileResourceWhereInput | Prisma.FileResourceWhereInput[]
   codFolder?: Prisma.StringNullableFilter<"FileResource"> | string | null
   originalName?: Prisma.StringFilter<"FileResource"> | string
-  filePath?: Prisma.StringFilter<"FileResource"> | string
-  url?: Prisma.StringFilter<"FileResource"> | string
+  filePath?: Prisma.StringNullableFilter<"FileResource"> | string | null
+  url?: Prisma.StringNullableFilter<"FileResource"> | string | null
   mimeType?: Prisma.StringNullableFilter<"FileResource"> | string | null
   extension?: Prisma.StringNullableFilter<"FileResource"> | string | null
   size?: Prisma.IntNullableFilter<"FileResource"> | number | null
@@ -341,8 +341,8 @@ export type FileResourceOrderByWithAggregationInput = {
   uuid?: Prisma.SortOrder
   codFolder?: Prisma.SortOrderInput | Prisma.SortOrder
   originalName?: Prisma.SortOrder
-  filePath?: Prisma.SortOrder
-  url?: Prisma.SortOrder
+  filePath?: Prisma.SortOrderInput | Prisma.SortOrder
+  url?: Prisma.SortOrderInput | Prisma.SortOrder
   mimeType?: Prisma.SortOrderInput | Prisma.SortOrder
   extension?: Prisma.SortOrderInput | Prisma.SortOrder
   size?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -366,8 +366,8 @@ export type FileResourceScalarWhereWithAggregatesInput = {
   uuid?: Prisma.StringWithAggregatesFilter<"FileResource"> | string
   codFolder?: Prisma.StringNullableWithAggregatesFilter<"FileResource"> | string | null
   originalName?: Prisma.StringWithAggregatesFilter<"FileResource"> | string
-  filePath?: Prisma.StringWithAggregatesFilter<"FileResource"> | string
-  url?: Prisma.StringWithAggregatesFilter<"FileResource"> | string
+  filePath?: Prisma.StringNullableWithAggregatesFilter<"FileResource"> | string | null
+  url?: Prisma.StringNullableWithAggregatesFilter<"FileResource"> | string | null
   mimeType?: Prisma.StringNullableWithAggregatesFilter<"FileResource"> | string | null
   extension?: Prisma.StringNullableWithAggregatesFilter<"FileResource"> | string | null
   size?: Prisma.IntNullableWithAggregatesFilter<"FileResource"> | number | null
@@ -382,8 +382,8 @@ export type FileResourceCreateInput = {
   uuid?: string
   codFolder?: string | null
   originalName: string
-  filePath: string
-  url: string
+  filePath?: string | null
+  url?: string | null
   mimeType?: string | null
   extension?: string | null
   size?: number | null
@@ -399,8 +399,8 @@ export type FileResourceUncheckedCreateInput = {
   uuid?: string
   codFolder?: string | null
   originalName: string
-  filePath: string
-  url: string
+  filePath?: string | null
+  url?: string | null
   mimeType?: string | null
   extension?: string | null
   size?: number | null
@@ -415,8 +415,8 @@ export type FileResourceUpdateInput = {
   uuid?: Prisma.StringFieldUpdateOperationsInput | string
   codFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
-  filePath?: Prisma.StringFieldUpdateOperationsInput | string
-  url?: Prisma.StringFieldUpdateOperationsInput | string
+  filePath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   extension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   size?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -432,8 +432,8 @@ export type FileResourceUncheckedUpdateInput = {
   uuid?: Prisma.StringFieldUpdateOperationsInput | string
   codFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
-  filePath?: Prisma.StringFieldUpdateOperationsInput | string
-  url?: Prisma.StringFieldUpdateOperationsInput | string
+  filePath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   extension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   size?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -449,8 +449,8 @@ export type FileResourceCreateManyInput = {
   uuid?: string
   codFolder?: string | null
   originalName: string
-  filePath: string
-  url: string
+  filePath?: string | null
+  url?: string | null
   mimeType?: string | null
   extension?: string | null
   size?: number | null
@@ -465,8 +465,8 @@ export type FileResourceUpdateManyMutationInput = {
   uuid?: Prisma.StringFieldUpdateOperationsInput | string
   codFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
-  filePath?: Prisma.StringFieldUpdateOperationsInput | string
-  url?: Prisma.StringFieldUpdateOperationsInput | string
+  filePath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   extension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   size?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -482,8 +482,8 @@ export type FileResourceUncheckedUpdateManyInput = {
   uuid?: Prisma.StringFieldUpdateOperationsInput | string
   codFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
-  filePath?: Prisma.StringFieldUpdateOperationsInput | string
-  url?: Prisma.StringFieldUpdateOperationsInput | string
+  filePath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   extension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   size?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -647,8 +647,8 @@ export type $FileResourcePayload<ExtArgs extends runtime.Types.Extensions.Intern
     uuid: string
     codFolder: string | null
     originalName: string
-    filePath: string
-    url: string
+    filePath: string | null
+    url: string | null
     mimeType: string | null
     extension: string | null
     size: number | null

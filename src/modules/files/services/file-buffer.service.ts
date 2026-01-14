@@ -24,8 +24,7 @@ export class FileBufferService {
         data: {
           codFolder: folder,
           originalName: query.nombreArchivo,
-          filePath: `${folder}/${file.filename}`,
-          url: `http://localhost:8900/${folder}/${file.filename}`,
+          filePath: `${folder}/${query.nombreArchivo}`,
           mimeType: file.mimetype,
           uploadedBy: userId,
           extension: file.filename.split('.').pop() || '',
@@ -38,15 +37,22 @@ export class FileBufferService {
         body: file.buffer,
         contentType: file.mimetype,
         metadata: {
-          original_name_base64: Buffer.from(newFile.originalName, 'utf-8').toString('base64'),
-          upload_field: file.fieldname,
+          file_name: newFile.originalName,
+          /* original_name_base64: Buffer.from(newFile.originalName, 'utf-8').toString('base64'), */
+          /* upload_field: file.fieldname, */
           upload_timestamp: new Date().toISOString(),
           file_extension: newFile.extension || '',
           uploaded_by: userId.toString(),
         },
       });
 
-      return newFile;
+      const url = `${process.env.CROSS_URL || 'http://localhost:8900'}/api/v1/public/files/${newFile.uuid}/download`;
+      const updateFile = await tx.fileResource.update({
+        where: { id: newFile.id },
+        data: { url },
+      });
+
+      return updateFile;
     });
 
     return {
@@ -71,7 +77,7 @@ export class FileBufferService {
 
   async download(
     uuid: string,
-  ): Promise<{ buffer: Buffer; mimeType: string; originalName: string; size: number }> {
+  ): Promise<{ buffer: Buffer; originalName: string; mimeType: string; size: number }> {
     const file = await this.prisma.fileResource.findFirst({
       where: { uuid },
     });
@@ -87,8 +93,8 @@ export class FileBufferService {
 
     return {
       buffer,
-      mimeType: file.mimeType ?? 'application/octet-stream',
       originalName: file.originalName,
+      mimeType: file.mimeType ?? 'application/octet-stream',
       size: buffer.length,
     };
   }

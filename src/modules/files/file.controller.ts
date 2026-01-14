@@ -1,5 +1,5 @@
 import { MultipartInterceptor } from '@/common/interceptors/multipart.interceptor';
-import { Files, RawResponse, SuccesMessage } from '@common/decorators';
+import { Files, Public, RawResponse, SuccesMessage } from '@common/decorators';
 import {
   Controller,
   Delete,
@@ -43,9 +43,10 @@ export class FileController {
     @Req() req: FastifyRequest,
   ) {
     const file: Storage.MultipartFile = data['documento'][0];
-    console.log(file);
 
     if (!file) throw new Error('No hay ningún archivo para subir');
+
+    console.log('Uploading file:', file.fieldname, 'Size:', file.size);
 
     return await this.bufferServ.upload(query, file, req.user?.id || 0);
   }
@@ -68,6 +69,19 @@ export class FileController {
   async downloadFile(@Param('uuid', ParseUUIDPipe) uuid: string, @Res() reply: FastifyReply) {
     const file = await this.bufferServ.download(uuid);
 
+    reply
+      .code(200)
+      .header('Content-Type', file.mimeType)
+      .header('Content-Disposition', `attachment; filename="${file.originalName}"`)
+      .header('Content-Length', file.size.toString())
+      .send(file.buffer);
+  }
+
+  @Public()
+  @Get('public/files/:uuid/download')
+  @RawResponse()
+  async getPublicFile(@Param('uuid', ParseUUIDPipe) uuid: string, @Res() reply: FastifyReply) {
+    const file = await this.bufferServ.download(uuid);
     reply
       .code(200)
       .header('Content-Type', file.mimeType)
@@ -105,7 +119,7 @@ export class FileController {
     return {
       codigo: 200,
       mensaje: 'Archivo eliminado correctamente',
-      data: { id: id },
+      data: null,
     };
   }
 
