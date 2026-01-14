@@ -1,99 +1,130 @@
+
+# Manual de Ejecución — Plataforma Cross Garage
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" />
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+---
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## ¿Qué es este proyecto?
 
-## Description
+Este repositorio contiene una plataforma basada en **NestJS** para la gestión y almacenamiento de archivos, utilizando un backend propio, almacenamiento S3 compatible y una interfaz web de administración. Todo el entorno se orquesta mediante **Docker Compose** para facilitar la ejecución y el desarrollo.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## Arquitectura y Contenedores
 
-```bash
-$ npm install
-```
+El sistema se compone de los siguientes contenedores principales:
 
-## Compile and run the project
+### 1. `garage`
 
-```bash
-# development
-$ npm run start
+> **Almacenamiento S3 compatible** (DXFLRS Garage)
 
-# watch mode
-$ npm run start:dev
+- Proporciona almacenamiento de objetos compatible con S3.
+- Expone los puertos 3900 (S3 API), 3901-3903 (admin y otros servicios).
+- Persiste los datos y la configuración en volúmenes locales.
 
-# production mode
-$ npm run start:prod
-```
+### 2. `cross-node`
 
-## Run tests
+> **Backend principal** (NestJS)
 
-```bash
-# unit tests
-$ npm run test
+- Servidor Node.js (NestJS) que expone la API y lógica de negocio.
+- Accede al almacenamiento S3 a través del contenedor `garage`.
+- Recarga automática en desarrollo gracias a Nodemon.
 
-# e2e tests
-$ npm run test:e2e
+### 3. `garage-ui`
 
-# test coverage
-$ npm run test:cov
-```
+> **Interfaz web de administración**
 
-## Deployment
+- Web UI para gestionar buckets, archivos y credenciales.
+- Se conecta al API de `garage` y permite administración visual.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Ejecución rápida
+
+### 1. Requisitos previos
+
+- Docker y Docker Compose instalados
+- Bash (Git Bash en Windows, o terminal Linux/Mac)
+
+### 2. Inicialización automática
+
+El script `init.sh` automatiza todo el proceso de despliegue y configuración:
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+./init.sh [opciones]
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+#### Opciones disponibles:
 
-## Resources
+| Opción            | Descripción                                 | Valor por defecto |
+|-------------------|---------------------------------------------|-------------------|
+| `--environment` o `-e` | Entorno de ejecución (`dev` o `prod`)         | dev               |
+| `--bucket` o `-b`      | Nombre del bucket S3 a crear                   | sim-cross         |
+| `--disk` o `-d`        | Tamaño del disco de datos (ej: 100G)           | 100G              |
+| `--help` o `-h`        | Muestra la ayuda                              |                   |
 
-Check out a few resources that may come in handy when working with NestJS:
+#### Ejemplo de uso:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+# Levantar todo en modo desarrollo con bucket por defecto
+./init.sh
 
-## Support
+# Levantar en producción y bucket personalizado
+./init.sh -e prod -b mis-archivos
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+## ¿Qué hace el script `init.sh`?
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+1. **Detecta el sistema operativo** (Windows, Linux, Mac).
+2. **Levanta los contenedores base** (`garage`).
+3. **Configura el almacenamiento** (layout, asignación de disco, etc).
+4. **Crea bucket y credenciales S3** (Access Key y Secret Key).
+5. **Genera el archivo `.env`** con las variables necesarias para el backend.
+6. **Levanta la interfaz web y el backend** (`garage-ui`, `cross-node`).
+7. **Ajusta recursos de memoria en desarrollo** para optimizar el entorno.
 
-## License
+Todo el proceso es automático y deja el entorno listo para desarrollo o pruebas.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
+
+## Acceso a los servicios
+
+| Servicio         | URL de acceso                | Descripción                  |
+|------------------|-----------------------------|------------------------------|
+| API S3           | http://localhost:3900        | Endpoint S3 compatible       |
+| Admin Garage     | http://localhost:3903        | API de administración Garage |
+| Web UI           | http://localhost:3909        | Interfaz web de Garage       |
+| Backend (API)    | http://localhost:8900        | API principal NestJS         |
+
+> **Nota:** Los puertos pueden cambiar si modificas el archivo `compose.yaml`.
+
+---
+
+## Desarrollo y pruebas
+
+Puedes modificar el código fuente en la carpeta `src/` y los cambios se reflejarán automáticamente en el backend (`cross-node`) gracias a Nodemon.
+
+Para detener todos los servicios:
+
+```bash
+docker compose down
+```
+
+---
+
+## Recursos útiles
+
+- [Documentación oficial de NestJS](https://docs.nestjs.com)
+- [Garage S3 (DXFLRS)](https://garagehq.deuxfleurs.fr/)
+- [Docker Compose](https://docs.docker.com/compose/)
+
+---
+
+## Licencia
+
+MIT
