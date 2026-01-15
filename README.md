@@ -41,6 +41,7 @@ El sistema se compone de los siguientes contenedores principales:
 
 ---
 
+
 ## Ejecución rápida
 
 ### 1. Requisitos previos
@@ -48,9 +49,10 @@ El sistema se compone de los siguientes contenedores principales:
 - Docker y Docker Compose instalados
 - Bash (Git Bash en Windows, o terminal Linux/Mac)
 
-### 2. Inicialización automática
 
-El script `init.sh` automatiza todo el proceso de despliegue y configuración:
+### 2. Inicialización automática (opcional)
+
+El script `init.sh` automatiza todo el proceso de despliegue y configuración con Docker Compose. Es ideal para levantar el entorno completo rápidamente, especialmente en entornos de pruebas o producción:
 
 ```bash
 ./init.sh [opciones]
@@ -77,6 +79,26 @@ El script `init.sh` automatiza todo el proceso de despliegue y configuración:
 
 ---
 
+## Recomendación para desarrollo local
+
+Si solo deseas trabajar en el backend (NestJS) y tienes las dependencias instaladas (por ejemplo, ya ejecutaste `init.sh` al menos una vez para generar el archivo `.env` y levantar los servicios base), es preferible utilizar los comandos de NestJS para desarrollo:
+
+```bash
+npm run start:dev
+# o para depuración avanzada
+npm run start:debug
+```
+
+**Ventajas:**
+- Recarga automática y más rápida de los cambios en el código fuente.
+- Mejor integración con herramientas de depuración y el ecosistema de Node.js.
+- Permite trabajar solo sobre el backend sin reiniciar todos los contenedores.
+
+> **Nota:** Asegúrate de que el archivo `.env` esté correctamente configurado y que los servicios de Garage (S3) estén en ejecución (puedes usar `docker compose up -d garage`).
+
+---
+
+
 ## ¿Qué hace el script `init.sh`?
 
 1. **Detecta el sistema operativo** (Windows, Linux, Mac).
@@ -91,6 +113,7 @@ Todo el proceso es automático y deja el entorno listo para desarrollo o pruebas
 
 ---
 
+
 ## Acceso a los servicios
 
 | Servicio      | URL de acceso         | Descripción                  |
@@ -104,9 +127,10 @@ Todo el proceso es automático y deja el entorno listo para desarrollo o pruebas
 
 ---
 
+
 ## Desarrollo y pruebas
 
-Puedes modificar el código fuente en la carpeta `src/` y los cambios se reflejarán automáticamente en el backend (`cross-node`) gracias a Nodemon.
+Puedes modificar el código fuente en la carpeta `src/` y los cambios se reflejarán automáticamente en el backend (`cross-node`) gracias a Nodemon (si usas Docker) o a la recarga en caliente de NestJS (`npm run start:dev`).
 
 Para detener todos los servicios:
 
@@ -115,6 +139,33 @@ docker compose down
 ```
 
 ---
+
+## Variables de entorno y configuración de NestJS
+
+El backend utiliza un archivo `.env` para definir variables de entorno críticas. Este archivo se genera automáticamente a partir de `.env.example` durante la inicialización, pero puedes editarlo según tus necesidades.
+
+Algunas variables importantes:
+
+| Variable                | Descripción                                                                 |
+|-------------------------|-----------------------------------------------------------------------------|
+| `NODE_ENV`              | Entorno de ejecución (`development` o `production`). Afecta logs y validaciones. |
+| `PORT`                  | Puerto donde se expone la API de NestJS (por defecto: 8900).                |
+| `S3_ENDPOINT`           | URL del servicio S3 (por defecto: `http://garage:3900`).                    |
+| `S3_ACCESS_KEY_ID`      | Access Key para autenticación S3.                                           |
+| `S3_SECRET_ACCESS_KEY`  | Secret Key para autenticación S3.                                           |
+| `S3_BUCKET_NAME`        | Nombre del bucket S3 a utilizar.                                            |
+| `DB_DEBUG`              | Habilita logs detallados de la base de datos (`true` en dev, `false` en prod).|
+| `LOG_LEVEL`             | Nivel de logs de NestJS (`debug`, `info`, `warn`, `error`).                 |
+| `CORS_ORIGIN`           | Origen permitido para CORS (útil para desarrollo frontend).                  |
+
+Puedes agregar más variables según las necesidades de tu entorno o de los módulos de NestJS. Consulta el archivo `.env.example` y la documentación de cada módulo para más detalles.
+
+> **Tip:** Las propiedades de configuración de NestJS pueden ser accedidas y personalizadas en los archivos de la carpeta `src/config/`.
+
+Por ejemplo, para cambiar el puerto de la API, puedes modificar la variable `PORT` en `.env` o el archivo `src/config/app.config.ts`.
+
+---
+
 
 ## Recursos útiles
 

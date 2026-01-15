@@ -198,6 +198,10 @@ EOF
     rm -f compose.temp.yml
 fi
 
+if [ "$ENVIRONMENT" == "dev" ]; then
+    npm ci --no-audit --no-fund --legacy-peer-deps
+fi
+
 echo -e "\n${GREEN}🎉 SETUP COMPLETADO EXITOSAMENTE${NC}"
 echo -e "${CYAN}📄 Las credenciales han sido guardadas en: $ENV_FILE${NC}"
 echo -e "${CYAN}📟 Sistema: $OS${NC}"
