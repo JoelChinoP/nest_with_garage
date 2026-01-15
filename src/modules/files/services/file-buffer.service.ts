@@ -15,6 +15,11 @@ export class FileBufferService {
   async uploadSimpleFile(query: SimpleFileDto, file: Storage.MultipartFile): Promise<void> {
     const path = `${query.codFolder}/${query.uuid}.${query.extension}`;
 
+    const existsFile = await this.s3.exists(path);
+    if (existsFile) {
+      throw new Error('El archivo ya existe en el almacenamiento');
+    }
+
     const result = await this.s3.upload({
       key: path,
       body: file.buffer,
@@ -29,7 +34,7 @@ export class FileBufferService {
   }
 
   async upload(query: UploadQueryDto, file: Storage.MultipartFile): Promise<UploadResponseDto> {
-    const folder = query.codFolder ?? 'all-files';
+    const folder = query.codFolder;
 
     // Add your Prisma operations inside the array below
     const newFile = await this.prisma.$transaction(async (tx) => {
