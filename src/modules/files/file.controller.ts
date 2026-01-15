@@ -21,6 +21,7 @@ import { UploadQueryDto } from './dto/upload-query.dto';
 import { FileBufferService } from './services/file-buffer.service';
 import type { FastifyReply } from 'fastify/types/reply';
 import { FastifyRequest } from 'fastify';
+import { SimpleFileDto } from './dto/simple-file.dto';
 
 @Controller('/')
 export class FileController {
@@ -31,6 +32,20 @@ export class FileController {
   @SuccesMessage('Archivo subido correctamente')
   getFolder() {
     return 'OK';
+  }
+
+  @Public()
+  @Post('files')
+  @HttpCode(HttpStatus.CREATED)
+  @SuccesMessage('Archivo subido correctamente')
+  @UseInterceptors(MultipartInterceptor())
+  async uploadSimple(
+    @Query() query: SimpleFileDto,
+    @Files() data: Record<string, Storage.MultipartFile[]>,
+  ) {
+    const file: Storage.MultipartFile = data['documento'][0];
+    if (!file) throw new Error('No hay ningún archivo para subir');
+    await this.bufferServ.uploadSimpleFile(query, file);
   }
 
   @Post('files/upload/')

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class UploadQueryDto {
@@ -38,6 +38,18 @@ export class UploadQueryDto {
   @IsNotEmpty({ message: 'El nombre del archivo es obligatorio' })
   @MinLength(1, { message: 'El nombre del archivo no puede estar vacío' })
   nombreArchivo: string;
+
+  @IsOptional()
+  @Transform(({ value }: { value: unknown }) => {
+    if (typeof value === 'boolean') return value;
+    if (value === 1 || value === '1' || value === 'true') return true;
+    if (value === 0 || value === '0' || value === 'false') return false;
+    return value;
+  })
+  @IsBoolean({
+    message: 'isTemp debe ser true/false, 1/0, o "true"/"false"',
+  })
+  isTemp?: boolean;
 
   @IsOptional()
   countWordPages?: string;
