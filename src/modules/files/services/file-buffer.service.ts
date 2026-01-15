@@ -11,10 +11,7 @@ export class FileBufferService {
     private readonly s3: S3Service,
   ) {}
 
-  async upload(
-    query: UploadQueryDto,
-    file: Storage.MultipartFile,
-  ): Promise<UploadResponseDto> {
+  async upload(query: UploadQueryDto, file: Storage.MultipartFile): Promise<UploadResponseDto> {
     const folder = query.codFolder ?? 'all-files';
 
     // Add your Prisma operations inside the array below
@@ -102,7 +99,7 @@ export class FileBufferService {
     id: number,
   ): Promise<{ buffer: Buffer; originalName: string; mimeType: string; size: number }> {
     const file = await this.prisma.fileResource.findFirst({
-      where: { id:id },
+      where: { id: id },
     });
 
     if (!file) throw new NotFoundException('Archivo no encontrado');
@@ -145,49 +142,24 @@ export class FileBufferService {
   }
 
   async getFileData(identifier: string) {
-    const file = await this.findByIdOrUuid(identifier);
+    const isNumber = !isNaN(Number(identifier));
 
-    if (!file) {
-      throw new Error('Archivo no encontrado');
-    }
+    const file = await this.prisma.fileResource.findFirst({
+      where: isNumber ? { id: Number(identifier) } : { uuid: identifier },
+    });
 
-    const result = {
+    if (!file) throw new NotFoundException('Archivo no encontrado');
+
+    return {
       codigo: file.id,
       nombre: file.originalName,
       codigoAlfresco: file.uuid,
-      code_folder: file.cod_folder,
-      file_path: file.file_path,
+      code_folder: file.codFolder,
+      file_path: file.filePath,
       url: file.url,
-      mime_type: file.mime_type,
+      mime_type: file.mimeType,
       extension: file.extension,
       size: file.size,
     };
-
-    return result;
-  }
-
-  private async findByIdOrUuid(identifier: string) {
-    // UUID v1–v5
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-    // Buscar por UUID
-    if (uuidRegex.test(identifier)) {
-      return this.prisma.fileResource.findFirst({
-        where: { uuid: identifier },
-      });
-    }
-
-    // Buscar por ID numérico
-    if (!isNaN(Number(identifier))) {
-      return this.prisma.fileResource.findFirst({
-        where: { id: Number(identifier) },
-      });
-    }
-
-    // Fallback: intentar UUID
-    return this.prisma.fileResource.findFirst({
-      where: { uuid: identifier },
-    });
   }
 }

@@ -25,8 +25,7 @@ export class UploadQueryDto {
   detalleDocSustento?: string;
 
   @IsOptional()
-  @Transform(({ value }) => {
-    // Si ya es booleano, lo retorna directamente
+  @Transform(({ value }: { value: unknown }) => {
     if (typeof value === 'boolean') return value;
 
     // Si es número o string, convierte 1/"1" a true y 0/"0" a false
@@ -35,7 +34,7 @@ export class UploadQueryDto {
 
     return value;
   })
-  @IsBoolean()
+  @IsBoolean({ message: 'El campo isTemp debe ser un valor booleano' })
   isTemp?: boolean;
 
   @Transform(({ value }: { value: string }) => {

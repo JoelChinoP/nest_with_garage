@@ -14,13 +14,10 @@ import {
   Query,
   UseInterceptors,
   Res,
-  Put,
-  Req,
 } from '@nestjs/common';
 import { UploadQueryDto } from './dto/upload-query.dto';
 import { FileBufferService } from './services/file-buffer.service';
 import type { FastifyReply } from 'fastify/types/reply';
-import { FastifyRequest } from 'fastify';
 
 @Controller('/')
 export class FileController {
@@ -150,7 +147,7 @@ export class FileController {
   @Get('files/:identifier/data')
   @HttpCode(HttpStatus.OK)
   @SuccesMessage('Datos del archivo obtenidos correctamente')
-  async getFileDataByIdOrUiid (@Param('identifier' ) identifier: string ) {
+  async getFileDataByIdOrUiid(@Param('identifier') identifier: string) {
     return await this.bufferServ.getFileData(identifier);
   }
 }
