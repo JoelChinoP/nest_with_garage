@@ -3,6 +3,7 @@ import { PrismaService } from '@modules/prisma/prisma.service';
 import { UploadQueryDto } from '../dto/upload-query.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UploadResponseDto } from '../dto';
+import { SimpleFileDto } from '../dto/simple-file.dto';
 
 @Injectable()
 export class FileBufferService {
@@ -10,6 +11,22 @@ export class FileBufferService {
     private readonly prisma: PrismaService,
     private readonly s3: S3Service,
   ) {}
+
+  async uploadSimpleFile(query: SimpleFileDto, file: Storage.MultipartFile): Promise<void> {
+    const path = `${query.codFolder}/${query.uuid}.${query.extension}`;
+
+    const result = await this.s3.upload({
+      key: path,
+      body: file.buffer,
+      contentType: file.mimetype,
+      metadata: {
+        file_name: query.originalName,
+        file_extension: query.extension,
+      },
+    });
+
+    if (!result) throw new Error('Error al subir el archivo simple a S3');
+  }
 
   async upload(query: UploadQueryDto, file: Storage.MultipartFile): Promise<UploadResponseDto> {
     const folder = query.codFolder ?? 'all-files';
