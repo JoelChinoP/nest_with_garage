@@ -14,7 +14,6 @@ export class FileBufferService {
   async upload(
     query: UploadQueryDto,
     file: Storage.MultipartFile,
-    userId: number,
   ): Promise<UploadResponseDto> {
     const folder = query.codFolder ?? 'all-files';
 
@@ -26,9 +25,10 @@ export class FileBufferService {
           originalName: query.nombreArchivo,
           filePath: `${folder}/${query.nombreArchivo}`,
           mimeType: file.mimetype,
-          uploadedBy: userId,
+          uploadedBy: null,
           extension: file.filename.split('.').pop() || '',
           size: file.size,
+          isTemp: query.isTemp,
         },
       });
 
@@ -42,7 +42,6 @@ export class FileBufferService {
           /* upload_field: file.fieldname, */
           upload_timestamp: new Date().toISOString(),
           file_extension: newFile.extension || '',
-          uploaded_by: userId.toString(),
         },
       });
 
@@ -99,6 +98,30 @@ export class FileBufferService {
     };
   }
 
+  async viewFile(
+    id: number,
+  ): Promise<{ buffer: Buffer; originalName: string; mimeType: string; size: number }> {
+    const file = await this.prisma.fileResource.findFirst({
+      where: { id:id },
+    });
+
+    if (!file) throw new NotFoundException('Archivo no encontrado');
+
+    const path = `${file.codFolder}/${file.uuid}.${file.extension}`;
+
+    const exists = await this.s3.exists(path);
+    if (!exists) throw new NotFoundException('Archivo no encontrado en el almacenamiento');
+
+    const buffer = await this.s3.downloadFile({ key: path });
+
+    return {
+      buffer,
+      originalName: file.originalName,
+      mimeType: file.mimeType ?? 'application/octet-stream',
+      size: buffer.length,
+    };
+  }
+
   async delete(id: number): Promise<void> {
     const file = await this.prisma.fileResource.findUnique({
       where: { id },
@@ -116,7 +139,55 @@ export class FileBufferService {
       where: { id },
       data: { isTemp: false },
     });
+
     if (!file) throw new Error('Archivo no encontrado');
     return file;
+  }
+
+  async getFileData(identifier: string) {
+    const file = await this.findByIdOrUuid(identifier);
+
+    if (!file) {
+      throw new Error('Archivo no encontrado');
+    }
+
+    const result = {
+      codigo: file.id,
+      nombre: file.originalName,
+      codigoAlfresco: file.uuid,
+      code_folder: file.cod_folder,
+      file_path: file.file_path,
+      url: file.url,
+      mime_type: file.mime_type,
+      extension: file.extension,
+      size: file.size,
+    };
+
+    return result;
+  }
+
+  private async findByIdOrUuid(identifier: string) {
+    // UUID v1–v5
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+    // Buscar por UUID
+    if (uuidRegex.test(identifier)) {
+      return this.prisma.fileResource.findFirst({
+        where: { uuid: identifier },
+      });
+    }
+
+    // Buscar por ID numérico
+    if (!isNaN(Number(identifier))) {
+      return this.prisma.fileResource.findFirst({
+        where: { id: Number(identifier) },
+      });
+    }
+
+    // Fallback: intentar UUID
+    return this.prisma.fileResource.findFirst({
+      where: { uuid: identifier },
+    });
   }
 }

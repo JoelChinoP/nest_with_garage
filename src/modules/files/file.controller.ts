@@ -33,6 +33,7 @@ export class FileController {
     return 'OK';
   }
 
+  @Public()
   @Post('files/upload/')
   @HttpCode(HttpStatus.OK)
   @SuccesMessage('Archivo subido correctamente')
@@ -40,14 +41,14 @@ export class FileController {
   async uploadFile(
     @Query() query: UploadQueryDto,
     @Files() data: Record<string, Storage.MultipartFile[]>,
-    @Req() req: FastifyRequest,
   ) {
     const file: Storage.MultipartFile = data['documento'][0];
     if (!file) throw new Error('No hay ningún archivo para subir');
 
-    return await this.bufferServ.upload(query, file, req.user?.id || 0);
+    return await this.bufferServ.upload(query, file);
   }
 
+  @Public()
   @Get('files-srv:uuid/download/')
   @RawResponse()
   async downloadFileServ(@Param('uuid', ParseUUIDPipe) uuid: string, @Res() reply: FastifyReply) {
@@ -61,10 +62,25 @@ export class FileController {
       .send(file.buffer);
   }
 
+  @Public()
   @Get('files/:uuid/download')
   @RawResponse()
   async downloadFile(@Param('uuid', ParseUUIDPipe) uuid: string, @Res() reply: FastifyReply) {
     const file = await this.bufferServ.download(uuid);
+
+    reply
+      .code(200)
+      .header('Content-Type', file.mimeType)
+      .header('Content-Disposition', `attachment; filename="${file.originalName}"`)
+      .header('Content-Length', file.size.toString())
+      .send(file.buffer);
+  }
+
+  @Public()
+  @Get('files/:id/view')
+  @RawResponse()
+  async viewFile(@Param('id', ParseIntPipe) id: number, @Res() reply: FastifyReply) {
+    const file = await this.bufferServ.viewFile(id);
 
     reply
       .code(200)
@@ -87,6 +103,7 @@ export class FileController {
       .send(file.buffer);
   }
 
+  @Public()
   @Get('files/:id')
   @HttpCode(HttpStatus.OK)
   @SuccesMessage('Archivo encontrado correctamente')
@@ -96,6 +113,7 @@ export class FileController {
     return exists;
   }
 
+  @Public()
   @Delete('files/:id/remove')
   @HttpCode(HttpStatus.OK)
   @RawResponse()
@@ -116,14 +134,23 @@ export class FileController {
     return {
       codigo: 200,
       mensaje: 'Archivo eliminado correctamente',
-      data: id % 2,
+      data: null,
     };
   }
 
-  @Put('files/:id/confirm')
+  @Public()
+  @Post('files/:id/confirm')
   @HttpCode(HttpStatus.OK)
   @SuccesMessage('Archivo confirmado correctamente')
   async confirmFileById(@Param('id', ParseIntPipe) id: number) {
     return await this.bufferServ.confirm(id);
+  }
+
+  @Public()
+  @Get('files/:identifier/data')
+  @HttpCode(HttpStatus.OK)
+  @SuccesMessage('Datos del archivo obtenidos correctamente')
+  async getFileDataByIdOrUiid (@Param('identifier' ) identifier: string ) {
+    return await this.bufferServ.getFileData(identifier);
   }
 }

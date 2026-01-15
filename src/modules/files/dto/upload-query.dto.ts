@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MinLength, IsBoolean } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class UploadQueryDto {
@@ -23,6 +23,20 @@ export class UploadQueryDto {
 
   @IsOptional()
   detalleDocSustento?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    // Si ya es booleano, lo retorna directamente
+    if (typeof value === 'boolean') return value;
+
+    // Si es número o string, convierte 1/"1" a true y 0/"0" a false
+    if (value === 1 || value === '1' || value === 'true') return true;
+    if (value === 0 || value === '0' || value === 'false') return false;
+
+    return value;
+  })
+  @IsBoolean()
+  isTemp?: boolean;
 
   @Transform(({ value }: { value: string }) => {
     if (!value) return value;
