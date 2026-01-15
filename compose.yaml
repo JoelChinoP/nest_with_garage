@@ -33,7 +33,7 @@ services:
         sh -c "
         npm ci --no-audit --no-fund --legacy-peer-deps && npx nodemon"
       ports:
-        - 8900:${APP_PORT:-8900}
+        - 8901:${APP_PORT:-8900}
       depends_on: [garage]
       networks: [cross-network]
 
