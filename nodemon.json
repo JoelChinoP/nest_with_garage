@@ -12,5 +12,5 @@
   ],
   "exec": "npm run build:swc && node --max-old-space-size=192 --max-semi-space-size=16 --predictable dist/main.js",
   "delay": "3000",
-  "legacyWatch": true
+  "legacyWatch": false
 }

@@ -189,7 +189,7 @@ services:
     mem_limit: 700m
     command: >
         sh -c "
-        npm ci --no-audit --no-fund --legacy-peer-deps && npx nodemon --delay 1"
+        npm ci --no-audit --no-fund --legacy-peer-deps && npx nodemon --delay 1 --legacy-watch=true"
 EOF
     # volumes:
     #   - ./node_modules:/app/node_modules
