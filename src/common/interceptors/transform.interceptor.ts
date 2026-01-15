@@ -11,7 +11,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, T | Response<
 
   intercept(ctx: ExecutionContext, next: CallHandler): Observable<T | Response<T>> {
     const isRaw = this.reflector.get<boolean>(RAW_RESPONSE, ctx.getHandler());
-    if (isRaw) return next.handle();
+    if (isRaw) return next.handle() as Observable<T>;
 
     return next.handle().pipe(
       map((data: T) => {

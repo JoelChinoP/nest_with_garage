@@ -4,7 +4,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { ValidationPipe } from '@nestjs/common';
 import { AppLogger } from '@config/logger.config';
 import multipart from '@fastify/multipart';
-import { TransformInterceptor } from './common/interceptors';
+import { HttpLoggerInterceptor, TransformInterceptor } from './common/interceptors';
 import { CatchEverythingFilter } from './common/filters/catch-everything.filter';
 import { ConfigService } from '@nestjs/config';
 
@@ -60,9 +60,10 @@ async function bootstrap() {
   //Configuración de prefijo global para las rutas
   app.setGlobalPrefix('/api/v1');
 
-  // Configuración de interceptor global para transformar respuestas
+  // Configuración de interceptores globales en orden para transformar respuestas
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
+  if (isDevelopment) app.useGlobalInterceptors(new HttpLoggerInterceptor());
 
   // Configuración de filtro global para manejo de excepciones
   const httpAdapterHost = app.get<HttpAdapterHost<FastifyAdapter>>(HttpAdapterHost);
