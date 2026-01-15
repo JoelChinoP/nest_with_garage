@@ -41,14 +41,12 @@ El sistema se compone de los siguientes contenedores principales:
 
 ---
 
-
 ## Ejecución rápida
 
 ### 1. Requisitos previos
 
 - Docker y Docker Compose instalados
 - Bash (Git Bash en Windows, o terminal Linux/Mac)
-
 
 ### 2. Inicialización automática (opcional)
 
@@ -90,6 +88,7 @@ npm run start:debug
 ```
 
 **Ventajas:**
+
 - Recarga automática y más rápida de los cambios en el código fuente.
 - Mejor integración con herramientas de depuración y el ecosistema de Node.js.
 - Permite trabajar solo sobre el backend sin reiniciar todos los contenedores.
@@ -97,7 +96,6 @@ npm run start:debug
 > **Nota:** Asegúrate de que el archivo `.env` esté correctamente configurado y que los servicios de Garage (S3) estén en ejecución (puedes usar `docker compose up -d garage`).
 
 ---
-
 
 ## ¿Qué hace el script `init.sh`?
 
@@ -113,7 +111,6 @@ Todo el proceso es automático y deja el entorno listo para desarrollo o pruebas
 
 ---
 
-
 ## Acceso a los servicios
 
 | Servicio      | URL de acceso         | Descripción                  |
@@ -126,7 +123,6 @@ Todo el proceso es automático y deja el entorno listo para desarrollo o pruebas
 > **Nota:** Los puertos pueden cambiar si modificas el archivo `compose.yaml`.
 
 ---
-
 
 ## Desarrollo y pruebas
 
@@ -146,17 +142,17 @@ El backend utiliza un archivo `.env` para definir variables de entorno críticas
 
 Algunas variables importantes:
 
-| Variable                | Descripción                                                                 |
-|-------------------------|-----------------------------------------------------------------------------|
-| `NODE_ENV`              | Entorno de ejecución (`development` o `production`). Afecta logs y validaciones. |
-| `PORT`                  | Puerto donde se expone la API de NestJS (por defecto: 8900).                |
-| `S3_ENDPOINT`           | URL del servicio S3 (por defecto: `http://garage:3900`).                    |
-| `S3_ACCESS_KEY_ID`      | Access Key para autenticación S3.                                           |
-| `S3_SECRET_ACCESS_KEY`  | Secret Key para autenticación S3.                                           |
-| `S3_BUCKET_NAME`        | Nombre del bucket S3 a utilizar.                                            |
-| `DB_DEBUG`              | Habilita logs detallados de la base de datos (`true` en dev, `false` en prod).|
-| `LOG_LEVEL`             | Nivel de logs de NestJS (`debug`, `info`, `warn`, `error`).                 |
-| `CORS_ORIGIN`           | Origen permitido para CORS (útil para desarrollo frontend).                  |
+| Variable               | Descripción                                                                      |
+| ---------------------- | -------------------------------------------------------------------------------- |
+| `NODE_ENV`             | Entorno de ejecución (`development` o `production`). Afecta logs y validaciones. |
+| `PORT`                 | Puerto donde se expone la API de NestJS (por defecto: 8900).                     |
+| `S3_ENDPOINT`          | URL del servicio S3 (por defecto: `http://garage:3900`).                         |
+| `S3_ACCESS_KEY_ID`     | Access Key para autenticación S3.                                                |
+| `S3_SECRET_ACCESS_KEY` | Secret Key para autenticación S3.                                                |
+| `S3_BUCKET_NAME`       | Nombre del bucket S3 a utilizar.                                                 |
+| `DB_DEBUG`             | Habilita logs detallados de la base de datos (`true` en dev, `false` en prod).   |
+| `LOG_LEVEL`            | Nivel de logs de NestJS (`debug`, `info`, `warn`, `error`).                      |
+| `CORS_ORIGIN`          | Origen permitido para CORS (útil para desarrollo frontend).                      |
 
 Puedes agregar más variables según las necesidades de tu entorno o de los módulos de NestJS. Consulta el archivo `.env.example` y la documentación de cada módulo para más detalles.
 
@@ -165,7 +161,6 @@ Puedes agregar más variables según las necesidades de tu entorno o de los mód
 Por ejemplo, para cambiar el puerto de la API, puedes modificar la variable `PORT` en `.env` o el archivo `src/config/app.config.ts`.
 
 ---
-
 
 ## Recursos útiles
 
