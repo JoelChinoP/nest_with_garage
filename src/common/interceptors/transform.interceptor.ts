@@ -3,7 +3,7 @@ import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nes
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { RAW_RESPONSE, SUCCES_MESSAGE_KEY } from '../decorators';
+import { RAW_RESPONSE, SUCCESS_MESSAGE_KEY } from '../decorators';
 
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor<T, T | Response<T>> {
@@ -18,7 +18,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, T | Response<
         const res = ctx.switchToHttp().getResponse<{ statusCode: number }>();
 
         const message =
-          this.reflector.get<string>(SUCCES_MESSAGE_KEY, ctx.getHandler()) ||
+          this.reflector.get<string>(SUCCESS_MESSAGE_KEY, ctx.getHandler()) ||
           (data as { message?: string } | null)?.message ||
           'Operación exitosa';
 
