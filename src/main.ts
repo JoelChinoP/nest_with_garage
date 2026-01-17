@@ -1,7 +1,7 @@
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { ValidationPipe } from '@nestjs/common';
+import { RequestMethod, ValidationPipe } from '@nestjs/common';
 import { AppLogger } from '@config/logger.config';
 import multipart from '@fastify/multipart';
 import { HttpLoggerInterceptor, TransformInterceptor } from './common/interceptors';
@@ -23,10 +23,28 @@ async function bootstrap() {
   app.enableCors({
     origin: '*', // allowed origins
     credentials: true, // for cookies, authorization headers with HTTPS
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // allowed HTTP methods
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], // allowed HTTP methods
     allowedHeaders: [
-      'Content-Type, Authorization, X-Requested-With, Authorization-sca, code-user, ip-cliente, name-user, rol-user, usuario-login, document-user, user-login, ip-client, ipcliente, usuariologin',
-    ], // allowed headers
+      // allowed headers
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Authorization-sca',
+      'code-user',
+      'ip-cliente',
+      'name-user',
+      'rol-user',
+      'usuario-login',
+      'document-user',
+      'user-login',
+      'ip-client',
+      'ipcliente',
+      'usuariologin',
+      'tus-resumable',
+      'upload-length',
+      'upload-metadata',
+      'upload-concat',
+    ],
     /* exposedHeaders: this.config.exposedHeaders, */
     maxAge: 600, // in seconds for how long the results of a preflight request can be cached
     strictPreflight: false, // require headers for all requests
@@ -57,8 +75,10 @@ async function bootstrap() {
   });
   app.useLogger(appLogger);
 
-  //Configuración de prefijo global para las rutas
-  app.setGlobalPrefix('/api/v1');
+  // Configuración del prefijo global de rutas y exclusiones
+  app.setGlobalPrefix('/api/v1', {
+    exclude: [{ path: '/api/v2/files-large', method: RequestMethod.POST }],
+  });
 
   // Configuración de interceptores globales en orden para transformar respuestas
   const reflector = app.get(Reflector);

@@ -71,6 +71,17 @@ export class S3Service implements OnModuleInit, OnModuleDestroy {
     return { bucket: this.garage.bucketName, key: arg.key };
   }
 
+  async uploadStream(arg: { key: string; body: Readable; contentType: string }) {
+    await this.s3.send(
+      new PutObjectCommand({
+        Bucket: this.garage.bucketName,
+        Key: arg.key,
+        Body: arg.body,
+        ContentType: arg.contentType,
+      }),
+    );
+  }
+
   /* ===================== DOWNLOAD URL ===================== */
   async getDownloadUrl(arg: { key: string; expires?: number }) {
     return getSignedUrl(

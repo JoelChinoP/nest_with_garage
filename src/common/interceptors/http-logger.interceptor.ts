@@ -4,7 +4,7 @@ import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { IncomingMessage } from 'http';
 import { tap } from 'rxjs/operators';
 
-interface ExtendedRequest extends HttpAdapterHost<FastifyAdapter> {
+export interface ExtendedRequest extends HttpAdapterHost<FastifyAdapter> {
   raw: IncomingMessage;
 }
 

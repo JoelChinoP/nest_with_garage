@@ -8,6 +8,7 @@ export interface GarageConfig {
   accessKeyId: string;
   secretAccessKey: string;
   bucketName: string;
+  maxFileSizeMB: number;
 }
 
 export const garageConfig = registerAs(
@@ -20,5 +21,6 @@ export const garageConfig = registerAs(
     accessKeyId: str('S3_ACCESS_KEY_ID'),
     secretAccessKey: str('S3_SECRET_ACCESS_KEY'),
     bucketName: str('S3_BUCKET_NAME'),
+    maxFileSizeMB: Number(str('GARAGE_MAX_FILE_SIZE_MB', '100')), // 100MB por defecto
   }),
 );

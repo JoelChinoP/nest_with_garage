@@ -10,6 +10,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { appConfig } from './config/app.config';
 import { databaseConfig } from './config/database.config';
 import { garageConfig } from './config/garage.config';
+import { TusModule } from './modules/tus/tus.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { garageConfig } from './config/garage.config';
     PrismaModule,
     S3Module,
     FileModule,
+    TusModule,
   ],
   providers: [
     {
